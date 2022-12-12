@@ -58,29 +58,21 @@ class MainUI():
         self.tbXML1 = QtWidgets.QTableWidget()
         xmltb_1= xml_table()
         xmltb_1.setupUi_XML1(self.tbXML1)
-        self.tbXML1.clicked.connect(self.click_xml_table)
-        
-        
+        self.tbXML1.clicked.connect(self.click_xml1_table)
         xml1_l = QtWidgets.QVBoxLayout(self.tab_xml1)
         xml1_l.addWidget(self.tbXML1)
 
         # TAG 2
         self.tbXML2 = QtWidgets.QTableWidget()
-        # xmltb_2= xml_table()
-        # xmltb_2.setupUi_XML1(self.tbXML2)
-        
-        # xml2_l = QtWidgets.QVBoxLayout(self.tab_xml2)
-        # xml2_l.addWidget(self.tbXML2)
+        xmltb_2= xml_table()
+        xmltb_2.setupUi_XML2(self.tbXML2)
+        xml2_l = QtWidgets.QVBoxLayout(self.tab_xml2)
+        xml2_l.addWidget(self.tbXML2)
 
         # TAB 3
         self.tbXML3 = QtWidgets.QTableWidget()
         xmltb_3= xml_table()
-        xmltb_3.setupUi_XML1(self.tbXML3)
-        
-        xml2_l = QtWidgets.QVBoxLayout(self.tab_xml2)
-        xml2_l.addWidget(self.tbXML2)
-
-
+        xmltb_3.setupUi_XML3(self.tbXML3)
         xml3_l = QtWidgets.QVBoxLayout(self.tab_xml3)
         xml3_l.addWidget(self.tbXML3)
 
@@ -115,81 +107,73 @@ class MainUI():
         main_l.addLayout(hbox1)
         main_l.addLayout(hbox2)
         MainWindow.setCentralWidget(CWget)
-        self.read_xml()
+        
 
     def click_btnRun(self):
         path = 'template.xml'
-        self.read_xml = ReadXML(path)
-        xml1_list = self.read_xml.init_xml1()
-        self.init_xml1_table(xml1_list)
+        read_xml = ReadXML(path)
+        read_xml.read_file()
+        read_xml.init_xml_table()
+        data_conn.get_xml1()
+        self.init_xml1_table()
 
-    def click_xml_table(self):
+    def click_xml1_table(self):
         index = self.tbXML1.selectionModel().currentIndex()
         row = index.row()
         if (row == -1):
             return
         ma_lk = index.sibling(row, 0).data()
-        self.read_xml.init_xml2345(ma_lk)
+        self.init_xml2_table(ma_lk)
+        self.init_xml3_table(ma_lk)
         
-
-    def read_xml(self):
-        read_xml = ReadXML('template.xml')
-        read_xml.init_xml1()
-      
-
-    def init_xml1_table(self, data_list):
+    def init_xml1_table(self):
+        # center_col những column sẽ căn giữa (mặc định căn trái)
+        center_col = [2,3,5,6,9,10,11,12]
         self.tbXML1.setRowCount(0)
-        for i, data in enumerate(data_list):
-            nd_decode = base64.b64decode(data)
-            nd_xml = BeautifulSoup(nd_decode, "xml")
-            nd_xml = nd_xml.find('TONG_HOP')
-            for j, tag in enumerate(nd_xml.find_all()):
-                # item_tag_name = QtWidgets.QTableWidgetItem(str(tag.name))
-                item_tag_value = QtWidgets.QTableWidgetItem(str(tag.text))
-                if ( j < 2):
+        rows = data_conn.get_xml1()
+        for i, row in enumerate(rows):
+            self.tbXML1.setRowCount(i + 1)
+            self.tbXML1.setRowHeight(i, 9)
+            for j in range(1, len(row)):
+                item = QtWidgets.QTableWidgetItem(row[j])
+                if j in center_col:
+                    item.setTextAlignment(QtCore.Qt.AlignCenter)
+                if ( j < 3):
                     pass
-                elif (j <= 6):
-                    item_tag_value.setBackground(QtGui.QColor("#F9E0AE"))
-                elif (j <= 11):
-                    item_tag_value.setBackground(QtGui.QColor("#CAE4DB"))
-                self.tbXML1.setRowCount(i + 1)
-                self.tbXML1.setRowHeight(i, 9)
-                self.tbXML1.setItem(i, j, item_tag_value)
-            
-            
-    def init_xml2_table(self, data):
+                elif (j <= 7):
+                    item.setBackground(QtGui.QColor("#F9E0AE"))
+                elif (j <= 12):
+                    item.setBackground(QtGui.QColor("#CAE4DB"))
+                self.tbXML1.setItem(i, j-1, item)
+  
+    def init_xml2_table(self, ma_lk):
+        # center_col những column sẽ căn giữa (mặc định căn trái)
+        center_col = [2,4,6,8,12]
         self.tbXML2.setRowCount(0)
-        for i, tag in enumerate(data.find_all()):
-            item_tag_name = QtWidgets.QTableWidgetItem(str(tag.name))
-            item_tag_value = QtWidgets.QTableWidgetItem(str(tag.text))
-            self.tbXML2.setRowCount(i+1)
+        rows = data_conn.get_xml2(ma_lk)
+        for i, row in enumerate(rows):
+            self.tbXML2.setRowCount(i + 1)
             self.tbXML2.setRowHeight(i, 9)
-            self.tbXML2.setItem(i, 0, item_tag_name)
-            self.tbXML2.setItem(i, 1, item_tag_value)
+            for j in range(1, len(row)):
+                item = QtWidgets.QTableWidgetItem(row[j])
+                if j in center_col:
+                    item.setTextAlignment(QtCore.Qt.AlignCenter)
+                self.tbXML2.setItem(i, j-1, item)
     
-    # def init_xml3_tree(self, data):
-    #     self.tree_xml3.clear()
-    #     dvkt_list = data.find_all('CHI_TIET_DVKT')
-    #     for i, dvkt in enumerate(dvkt_list, start=1):
-    #         item = QtWidgets.QTreeWidgetItem()
-    #         font = QtGui.QFont()
-    #         font.setBold(True)
-    #         item.setBackground(0, QtGui.QColor('azure'))
-    #         item.setBackground(1, QtGui.QColor('azure'))
-    #         item.setBackground(2, QtGui.QColor('azure'))
-    #         item.setText(0, f"STT: {str(i)}")
-    #         item.setText(1, '')
-    #         item.setText(2, '')
-    #         item.setFont(0, font)
-    #         for tag in dvkt:
-    #             if (tag.name != None):
-    #                 child = QtWidgets.QTreeWidgetItem(item)
-    #                 child.setText(0,'')
-    #                 child.setText(1, tag.name)
-    #                 child.setText(2, tag.text)
-    #                 item.addChild(child)
-    #         self.tree_xml3.addTopLevelItem(item)
-        # self.tree_xml3.expandToDepth(1)
+    def init_xml3_table(self, ma_lk):
+        # center_col những column sẽ căn giữa (mặc định căn trái)
+        center_col = [2,4,6,8,12]
+        self.tbXML3.setRowCount(0)
+        rows = data_conn.get_xml3(ma_lk)
+        for i, row in enumerate(rows):
+            self.tbXML3.setRowCount(i + 1)
+            self.tbXML3.setRowHeight(i, 9)
+            for j in range(1, len(row)):
+                item = QtWidgets.QTableWidgetItem(row[j])
+                if j in center_col:
+                    item.setTextAlignment(QtCore.Qt.AlignCenter)
+                self.tbXML3.setItem(i, j-1, item)
+  
     
     def xml1_check(self):
         # Kiểm tra ngày vào - ngày ra

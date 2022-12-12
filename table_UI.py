@@ -26,7 +26,7 @@ class xml_table():
                 case "TEN_BENH" |"DIA_CHI":
                     table.setColumnWidth(i, 500)
 
-    def setupUI_XML2(self, table):
+    def setupUi_XML2(self, table):
         tags= ['MA_LK','STT','MA_THUOC','MA_NHOM','TEN_THUOC','DON_VI_TINH','HAM_LUONG','DUONG_DUNG','LIEU_DUNG','SO_DANG_KY','TT_THAU','PHAM_VI','TYLE_TT','SO_LUONG','DON_GIA','THANH_TIEN','MUC_HUONG','T_NGUONKHAC','T_BNTT','T_BHTT','T_BNCCT','T_NGOAIDS','MA_KHOA','MA_BAC_SI','MA_BENH','NGAY_YL','MA_PTTT']
         #table = QtWidgets.QTableWidget()
         table.setColumnCount(len(tags))
@@ -45,7 +45,7 @@ class xml_table():
                 case "TEN_BENH" |"DIA_CHI":
                     table.setColumnWidth(i, 500)
     
-    def setupUI_XML3(self, table):
+    def setupUi_XML3(self, table):
         tags = ['MA_LK','STT','MA_DICH_VU','MA_VAT_TU','MA_NHOM','GOI_VTYT','TEN_VAT_TU','TEN_DICH_VU','DON_VI_TINH','PHAM_VI','SO_LUONG','DON_GIA','TT_THAU','TYLE_TT','THANH_TIEN','T_TRANTT','MUC_HUONG','T_NGUONKHAC','T_BNTT','T_BHTT','T_BNCCT','T_NGOAIDS','MA_KHOA','MA_GIUONG','MA_BAC_SI','MA_BENH','NGAY_YL','NGAY_KQ','MA_PTTT']
 
         #table = QtWidgets.QTableWidget()
