@@ -1,5 +1,9 @@
 from bs4 import BeautifulSoup
 import base64
+from database import dataConnection
+
+
+dt_conn = dataConnection()
 
 class ReadXML(object):
     def __init__(self, path):
@@ -34,6 +38,24 @@ class ReadXML(object):
             xml1_ar.append(xml1_content.text)
         return xml1_ar
 
+    def init_xml2(self):
+        file_hoso_list = self.xml_content.find_all('FILEHOSO')
+        for file in file_hoso_list:
+            loai_hs = file.find('LOAIHOSO')
+            nd_hs = file.find('NOIDUNGFILE')
+            match loai_hs.text:
+                case 'XML1':
+                    dt_conn.insert_xml1_table(nd_hs.text)
+                case 'XML2':
+                    dt_conn.insert_xml2_table(nd_hs.text)
+                case 'XML3':
+                    pass
+                case 'XML4':
+                    pass
+                case 'XML5':
+                    pass
+            
+
     def init_xml2345(self, ma_lk):
         print(ma_lk)
         ho_so_list = self.xml_content.find_all('HOSO')
@@ -60,4 +82,4 @@ class ReadXML(object):
 
 if __name__ == "__main__":
     a = ReadXML('')
-    a.get_tag_xml2()
+    a.init_xml2()

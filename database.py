@@ -1,4 +1,5 @@
-import sqlite3, os.path, sys
+import sqlite3, os.path, sys, base64
+from bs4 import BeautifulSoup
 
 #Tạo đường dẫn file
 if getattr(sys, 'frozen', False):
@@ -34,6 +35,47 @@ class dataConnection(object):
             stm = stm + tag.lower() + " TEXT,"
         stm = 'CREATE TABLE "xml3" ("id" INTEGER, ' + stm + 'PRIMARY KEY("id" AUTOINCREMENT));'
         self.cur.execute(stm)
+
+    def insert_xml1_table(self, data):
+        data_decode = base64.b64decode(data)
+        data_xml = BeautifulSoup(data_decode, "xml")
+        data_xml = data_xml.find('TONG_HOP')
+        column_list = ''
+        value_list = ''
+        for i, ele in enumerate(data_xml):
+            if (ele.name != None):
+                column_list = column_list + f'{str(ele.name).lower()},'
+                value_list = value_list + f'"{str(ele.text)}",'
+        column_list = column_list[:-1] 
+        value_list = value_list[:-1]  
+
+        stm = f"INSERT INTO xml1 (id,{column_list}) VALUES (null,{value_list});"
+        try:
+            self.cur.execute(stm)
+            self.con.commit()
+        except Exception as e:
+            print(str(e))
+    
+    def insert_xml2_table(self, data):
+        data_decode = base64.b64decode(data)
+        data_xml = BeautifulSoup(data_decode, "xml")
+        ctthuoc_list = data_xml.find_all('CHI_TIET_THUOC')
+        for ctthuoc in ctthuoc_list:
+            column_list = ''
+            value_list = ''
+            for ele in ctthuoc:
+            
+                if (ele.name != None):
+                    column_list = column_list + f'{str(ele.name).lower()},'
+                    value_list = value_list + f'"{str(ele.text)}",'
+            column_list = column_list[:-1] 
+            value_list = value_list[:-1]  
+            print(column_list, value_list)
+            
+        
+      
+       
+        
 
 
 
