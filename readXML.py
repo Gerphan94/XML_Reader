@@ -54,6 +54,6 @@ class ReadXML(object):
                 string = string + "'" + tag.name + "',"
         print(string)        
 
-# if __name__ == "__main__":
-#     a = ReadXML('')
-#     a.init_xml2()
+if __name__ == "__main__":
+    a = ReadXML('')
+    a.init_xml2()

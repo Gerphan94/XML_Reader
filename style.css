@@ -25,7 +25,7 @@ QTabBar::tab {
     border-top-right-radius: 4px;
     /* min-width: 8ex; */
     padding: 10px;
-	height: 15px;
+	height: 10px;
 	width: 80px;
 	color: #6fa8dc;
 	background: #fff;
@@ -42,7 +42,7 @@ QTabBar::tab:selected {
 	background: #6fa8dc;
     border-color: #6fa8dc;
 	color: #fff;
-	height: 20px;
+	height: 15px;
 	width: 80px;
 	font-style: bold;
 	font-size: 9pt;

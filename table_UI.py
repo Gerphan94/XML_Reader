@@ -5,7 +5,6 @@ class xml_table():
     def __init__(self):
         pass
 
-
     def setupUi_XML1(self, table):
         #self.tbXML1 = QtWidgets.QTableWidget()
         tags= ["MA_LK","STT","MA_BN","HO_TEN","NGAY_SINH","GIOI_TINH","DIA_CHI","MA_THE","MA_DKBD","GT_THE_TU","GT_THE_DEN","MIEN_CUNG_CT","TEN_BENH","MA_BENH","MA_BENHKHAC","MA_LYDO_VVIEN","MA_NOI_CHUYEN","MA_TAI_NAN","NGAY_VAO","NGAY_RA","SO_NGAY_DTRI","KET_QUA_DTRI","TINH_TRANG_RV","NGAY_TTOAN","T_THUOC","T_VTYT","T_TONGCHI","T_BNTT","T_BNCCT","T_BHTT","T_NGUONKHAC","T_NGOAIDS","NAM_QT","THANG_QT","MA_LOAI_KCB","MA_KHOA","MA_CSKCB","MA_KHUVUC","MA_PTTT_QT","CAN_NANG"]
@@ -65,4 +64,23 @@ class xml_table():
                 case "TEN_BENH" |"DIA_CHI":
                     table.setColumnWidth(i, 500)
     
+
+    def setupUi_XML4(self, table):
+        tags= ['MA_LK','STT','MA_DICH_VU','MA_CHI_SO','TEN_CHI_SO','GIA_TRI','MA_MAY','MO_TA','KET_LUAN','NGAY_KQ']
+        #table = QtWidgets.QTableWidget()
+        table.setColumnCount(len(tags))
+        table.setSelectionBehavior(QtWidgets.QTableView.SelectRows)
+        table.setSelectionMode(QtWidgets.QTableView.SingleSelection)
+        table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        for i,tag in enumerate(tags):
+            table.setHorizontalHeaderItem(i, QtWidgets.QTableWidgetItem(tag))
+            match tag:
+                case "STT":
+                    table.setColumnWidth(i, 50)
+                case "GIOI_TINH":
+                    table.setColumnWidth(i, 80)
+                case "HO_TEN":
+                    table.setColumnWidth(i, 150)
+                case "TEN_BENH" |"DIA_CHI":
+                    table.setColumnWidth(i, 500)
     

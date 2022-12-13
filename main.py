@@ -9,6 +9,7 @@ data_conn = dataConnection()
 
 class MainUI():
     def __init__(self):
+        self.xml_path = ''
         self.xml = ''
         self.xml1 = ''
         self.xml2 = ''
@@ -30,6 +31,7 @@ class MainUI():
         self.edtPath.setReadOnly(True)
         self.edtPath.setPlaceholderText("Chọn file xml")
         self.btnChooseFile = QtWidgets.QPushButton("Chọn File")
+        self.btnChooseFile.clicked.connect(self.choose_file)
         self.btnRun = QtWidgets.QPushButton("Khởi tạo")
         self.btnRun.clicked.connect(self.click_btnRun)
 
@@ -53,7 +55,6 @@ class MainUI():
         self.TAB2.addTab(self.tab_xml5, "XML5")
         self.tree = QtWidgets.QTreeWidget()
 
-
         # TAG XML1
         self.tbXML1 = QtWidgets.QTableWidget()
         xmltb_1= xml_table()
@@ -75,6 +76,12 @@ class MainUI():
         xmltb_3.setupUi_XML3(self.tbXML3)
         xml3_l = QtWidgets.QVBoxLayout(self.tab_xml3)
         xml3_l.addWidget(self.tbXML3)
+
+        self.tbXML4 = QtWidgets.QTableWidget()
+        xmltb_4= xml_table()
+        xmltb_4.setupUi_XML4(self.tbXML4)
+        xml4_l = QtWidgets.QVBoxLayout(self.tab_xml4)
+        xml4_l.addWidget(self.tbXML4)
 
         GB1 = QtWidgets.QGroupBox()
 
@@ -108,10 +115,20 @@ class MainUI():
         main_l.addLayout(hbox2)
         MainWindow.setCentralWidget(CWget)
         
+    def choose_file(self):
+        dialog = QtWidgets.QFileDialog()
+        dialog.setWindowTitle('Chọn file XML')
+        dialog.setNameFilter('XML files (*.xml)')
+        dialog.setDirectory(QtCore.QDir.currentPath())
+        dialog.setFileMode(QtWidgets.QFileDialog.ExistingFile)
+        if dialog.exec_() == QtWidgets.QDialog.Accepted:
+            self.xml_path = str(dialog.selectedFiles()[0])
+            self.edtPath.setText(self.xml_path)
+        else:
+            return None
 
     def click_btnRun(self):
-        path = 'template.xml'
-        read_xml = ReadXML(path)
+        read_xml = ReadXML(self.xml_path)
         read_xml.read_file()
         read_xml.init_xml_table()
         data_conn.get_xml1()
@@ -125,6 +142,7 @@ class MainUI():
         ma_lk = index.sibling(row, 0).data()
         self.init_xml2_table(ma_lk)
         self.init_xml3_table(ma_lk)
+        self.init_xml4_table(ma_lk)
         
     def init_xml1_table(self):
         # center_col những column sẽ căn giữa (mặc định căn trái)
@@ -173,6 +191,20 @@ class MainUI():
                 if j in center_col:
                     item.setTextAlignment(QtCore.Qt.AlignCenter)
                 self.tbXML3.setItem(i, j-1, item)
+
+    def init_xml4_table(self, ma_lk):
+        # center_col những column sẽ căn giữa (mặc định căn trái)
+        center_col = [2,4,6,8,12]
+        self.tbXML4.setRowCount(0)
+        rows = data_conn.get_xml4(ma_lk)
+        for i, row in enumerate(rows):
+            self.tbXML4.setRowCount(i + 1)
+            self.tbXML4.setRowHeight(i, 9)
+            for j in range(1, len(row)):
+                item = QtWidgets.QTableWidgetItem(row[j])
+                if j in center_col:
+                    item.setTextAlignment(QtCore.Qt.AlignCenter)
+                self.tbXML4.setItem(i, j-1, item)
   
     
     def xml1_check(self):

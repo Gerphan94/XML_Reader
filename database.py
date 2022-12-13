@@ -35,6 +35,14 @@ class dataConnection(object):
             stm = stm + tag.lower() + " TEXT,"
         stm = 'CREATE TABLE "xml3" ("id" INTEGER, ' + stm + 'PRIMARY KEY("id" AUTOINCREMENT));'
         self.cur.execute(stm)
+    
+    def create_xml4_table(self):
+        tags = ['MA_LK','STT','MA_DICH_VU','MA_CHI_SO','TEN_CHI_SO','GIA_TRI','MA_MAY','MO_TA','KET_LUAN','NGAY_KQ']
+        stm = ''
+        for tag in tags:
+            stm = stm + tag.lower() + " TEXT,"
+        stm = 'CREATE TABLE "xml4" ("id" INTEGER, ' + stm + 'PRIMARY KEY("id" AUTOINCREMENT));'
+        self.cur.execute(stm)
 
     # GET XML
     # Get xml1 data
@@ -132,6 +140,62 @@ class dataConnection(object):
             column_list = column_list[:-1] 
             value_list = value_list[:-1]  
             stm = f"INSERT INTO xml3 (id,{column_list}) VALUES (null,{value_list});"
+            try:
+                self.cur.execute(stm)
+                self.con.commit()
+            except Exception as e:
+                print(str(e))
+    
+    def delete_xml4_table(self):
+        stm = "DELETE FROM xml4"
+        try:
+            self.cur.execute(stm)
+            self.con.commit()
+        except Exception as e:
+            print(str(e))
+
+    def insert_xml4_table(self, data):
+        data_decode = base64.b64decode(data)
+        data_xml = BeautifulSoup(data_decode, "xml")
+        ct_cls_list = data_xml.find_all('CHI_TIET_CLS')
+        for ct_cls in ct_cls_list:
+            column_list = ''
+            value_list = ''
+            for ele in ct_cls:
+                if (ele.name != None):
+                    column_list = column_list + f'{str(ele.name).lower()},'
+                    value_list = value_list + f'"{str(ele.text)}",'
+            column_list = column_list[:-1] 
+            value_list = value_list[:-1]  
+            stm = f"INSERT INTO xml4 (id,{column_list}) VALUES (null,{value_list});"
+            try:
+                self.cur.execute(stm)
+                self.con.commit()
+            except Exception as e:
+                print(str(e))
+
+    def delete_xml5_table(self):
+        stm = "DELETE FROM xml5"
+        try:
+            self.cur.execute(stm)
+            self.con.commit()
+        except Exception as e:
+            print(str(e))
+    
+    def insert_xml5_table(self, data):
+        data_decode = base64.b64decode(data)
+        data_xml = BeautifulSoup(data_decode, "xml")
+        ct_cls_list = data_xml.find_all('CHI_TIET_CLS')
+        for ct_cls in ct_cls_list:
+            column_list = ''
+            value_list = ''
+            for ele in ct_cls:
+                if (ele.name != None):
+                    column_list = column_list + f'{str(ele.name).lower()},'
+                    value_list = value_list + f'"{str(ele.text)}",'
+            column_list = column_list[:-1] 
+            value_list = value_list[:-1]  
+            stm = f"INSERT INTO xml5 (id,{column_list}) VALUES (null,{value_list});"
             try:
                 self.cur.execute(stm)
                 self.con.commit()
