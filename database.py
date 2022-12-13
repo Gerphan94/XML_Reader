@@ -11,6 +11,17 @@ class dataConnection(object):
     def __init__(self):
         self.con = sqlite3.connect(working_dir + '\database.db')
         self.cur = self.con.cursor()
+    
+    def get_path(self):
+        try:
+            return self.cur.execute("SELECT path FROM lastPath").fetchall()[0][0]
+        except:
+            return None
+
+    def save_path(self, path):
+        print(path)
+        self.cur.execute(f"UPDATE lastPath SET path = '{path}'")
+        self.con.commit()
 
     def create_xml1_table(self):
         tags= ["MA_LK","STT","MA_BN","HO_TEN","NGAY_SINH","GIOI_TINH","DIA_CHI","MA_THE","MA_DKBD","GT_THE_TU","GT_THE_DEN","MIEN_CUNG_CT","TEN_BENH","MA_BENH","MA_BENHKHAC","MA_LYDO_VVIEN","MA_NOI_CHUYEN","MA_TAI_NAN","NGAY_VAO","NGAY_RA","SO_NGAY_DTRI","KET_QUA_DTRI","TINH_TRANG_RV","NGAY_TTOAN","T_THUOC","T_VTYT","T_TONGCHI","T_BNTT","T_BNCCT","T_BHTT","T_NGUONKHAC","T_NGOAIDS","NAM_QT","THANG_QT","MA_LOAI_KCB","MA_KHOA","MA_CSKCB","MA_KHUVUC","MA_PTTT_QT","CAN_NANG"]
@@ -42,6 +53,14 @@ class dataConnection(object):
         for tag in tags:
             stm = stm + tag.lower() + " TEXT,"
         stm = 'CREATE TABLE "xml4" ("id" INTEGER, ' + stm + 'PRIMARY KEY("id" AUTOINCREMENT));'
+        self.cur.execute(stm)
+    
+    def create_xml5_table(self):
+        tags = ['MA_LK','STT','DIEN_BIEN','HOI_CHAN','PHAU_THUAT','NGAY_YL']
+        stm = ''
+        for tag in tags:
+            stm = stm + tag.lower() + " TEXT,"
+        stm = 'CREATE TABLE "xml5" ("id" INTEGER, ' + stm + 'PRIMARY KEY("id" AUTOINCREMENT));'
         self.cur.execute(stm)
 
     # GET XML
@@ -185,11 +204,11 @@ class dataConnection(object):
     def insert_xml5_table(self, data):
         data_decode = base64.b64decode(data)
         data_xml = BeautifulSoup(data_decode, "xml")
-        ct_cls_list = data_xml.find_all('CHI_TIET_CLS')
-        for ct_cls in ct_cls_list:
+        ct_dbb_list = data_xml.find_all('CHI_TIET_DIEN_BIEN_BENH')
+        for ct_dbb in ct_dbb_list:
             column_list = ''
             value_list = ''
-            for ele in ct_cls:
+            for ele in ct_dbb:
                 if (ele.name != None):
                     column_list = column_list + f'{str(ele.name).lower()},'
                     value_list = value_list + f'"{str(ele.text)}",'
@@ -201,3 +220,7 @@ class dataConnection(object):
                 self.con.commit()
             except Exception as e:
                 print(str(e))
+
+# if __name__ == "__main__":
+#     con = dataConnection()
+#     con.create_xml5_table()

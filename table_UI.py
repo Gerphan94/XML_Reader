@@ -57,12 +57,9 @@ class xml_table():
             match tag:
                 case "STT":
                     table.setColumnWidth(i, 50)
-                case "GIOI_TINH":
-                    table.setColumnWidth(i, 80)
-                case "HO_TEN":
-                    table.setColumnWidth(i, 150)
-                case "TEN_BENH" |"DIA_CHI":
-                    table.setColumnWidth(i, 500)
+                case "TEN_VAT_TU" | "TEN_DICH_VU":
+                    table.setColumnWidth(i, 400)
+                
     
 
     def setupUi_XML4(self, table):
@@ -81,6 +78,25 @@ class xml_table():
                     table.setColumnWidth(i, 80)
                 case "HO_TEN":
                     table.setColumnWidth(i, 150)
+                case "TEN_BENH" |"DIA_CHI":
+                    table.setColumnWidth(i, 500)
+    
+    def setupUi_XML5(self, table):
+        tags= ['MA_LK','STT','DIEN_BIEN','HOI_CHAN','PHAU_THUAT','NGAY_YL']
+        #table = QtWidgets.QTableWidget()
+        table.setColumnCount(len(tags))
+        table.setSelectionBehavior(QtWidgets.QTableView.SelectRows)
+        table.setSelectionMode(QtWidgets.QTableView.SingleSelection)
+        table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        for i,tag in enumerate(tags):
+            table.setHorizontalHeaderItem(i, QtWidgets.QTableWidgetItem(tag))
+            match tag:
+                case "STT":
+                    table.setColumnWidth(i, 50)
+                case "GIOI_TINH":
+                    table.setColumnWidth(i, 80)
+                case "TEN_VAT_TU" | "TEN_DICH_VU":
+                    table.setColumnWidth(i, 200)
                 case "TEN_BENH" |"DIA_CHI":
                     table.setColumnWidth(i, 500)
     
