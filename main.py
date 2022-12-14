@@ -7,9 +7,13 @@ from database import dataConnection
 
 data_conn = dataConnection()
 
+XML3_tags = ['MA_LK','STT','MA_DICH_VU','MA_VAT_TU','MA_NHOM','GOI_VTYT','TEN_VAT_TU','TEN_DICH_VU','DON_VI_TINH','PHAM_VI','SO_LUONG','DON_GIA','TT_THAU','TYLE_TT','THANH_TIEN','T_TRANTT','MUC_HUONG','T_NGUONKHAC','T_BNTT','T_BHTT','T_BNCCT','T_NGOAIDS','MA_KHOA','MA_GIUONG','MA_BAC_SI','MA_BENH','NGAY_YL','NGAY_KQ','MA_PTTT']
+XML4_tags= ['MA_LK','STT','MA_DICH_VU','MA_CHI_SO','TEN_CHI_SO','GIA_TRI','MA_MAY','MO_TA','KET_LUAN','NGAY_KQ']
+
 class MainUI():
     def __init__(self):
         self.xml_path = data_conn.get_path()
+        self.log = ''
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -29,6 +33,9 @@ class MainUI():
         self.btnChooseFile.clicked.connect(self.choose_file)
         self.btnRun = QtWidgets.QPushButton("Khởi tạo")
         self.btnRun.clicked.connect(self.click_btnRun)
+        self.processBar = QtWidgets.QProgressBar()
+        self.processBar.setMaximum(100)
+        self.processBar.setFixedHeight(15)
 
         hbox1 = QtWidgets.QHBoxLayout()
         hbox1.addWidget(self.lb1)
@@ -68,13 +75,13 @@ class MainUI():
         # TAB 3
         self.tbXML3 = QtWidgets.QTableWidget()
         xmltb_3= xml_table()
-        xmltb_3.setupUi_XML3(self.tbXML3)
+        xmltb_3.setupUi_XML3(self.tbXML3, XML3_tags)
         xml3_l = QtWidgets.QVBoxLayout(self.tab_xml3)
         xml3_l.addWidget(self.tbXML3)
         # XML 4
         self.tbXML4 = QtWidgets.QTableWidget()
         xmltb_4= xml_table()
-        xmltb_4.setupUi_XML4(self.tbXML4)
+        xmltb_4.setupUi_XML4(self.tbXML4, XML4_tags)
         xml4_l = QtWidgets.QVBoxLayout(self.tab_xml4)
         xml4_l.addWidget(self.tbXML4)
 
@@ -91,8 +98,13 @@ class MainUI():
         self.btnxml1_check.clicked.connect(self.xml1_check)
         self.btnxml2_check = QtWidgets.QPushButton('XML2')
         self.btnxml3_check = QtWidgets.QPushButton('XML3')
+        self.btnxml3_check.clicked.connect(self.xml3_check)
         self.btnxml4_check = QtWidgets.QPushButton('XML4')
         self.btnxml5_check = QtWidgets.QPushButton('XML5')
+        self.btnShowLog = QtWidgets.QPushButton("Show Log")
+        self.btnShowLog.clicked.connect(self.click_btnShowLog)
+
+
         gb1_l = QtWidgets.QHBoxLayout(GB1)
         gb1_l.addStretch(1)
         gb1_l.addWidget(self.btnxml1_check)
@@ -100,6 +112,7 @@ class MainUI():
         gb1_l.addWidget(self.btnxml3_check)
         gb1_l.addWidget(self.btnxml4_check)
         gb1_l.addWidget(self.btnxml5_check)
+        gb1_l.addWidget(self.btnShowLog)
 
         self.list_log = QtWidgets.QListWidget()
 
@@ -108,15 +121,27 @@ class MainUI():
         vbox1.addWidget(self.TAB2)
         vbox1.addWidget(GB1)
 
-
         hbox2 = QtWidgets.QHBoxLayout()
         hbox2.addLayout(vbox1)
         #hbox2.addWidget(self.list_log)
         # C586C0
         main_l.addLayout(hbox1)
+        main_l.addWidget(self.processBar)
         main_l.addLayout(hbox2)
         MainWindow.setCentralWidget(CWget)
-        
+    
+    def setupLogDialog(self, dialog):
+        #dialog = QtWidgets.QDialog()
+        dialog.setFixedSize(800,600)
+        self.edtLog = QtWidgets.QPlainTextEdit()
+        self.edtLog.setPlainText(self.log)
+        self.edtLog.setReadOnly(True)
+        font = QtGui.QFont()
+        font.setPointSize(10)
+        self.edtLog.setFont(font)
+        dialog_l = QtWidgets.QVBoxLayout(dialog)
+        dialog_l.addWidget(self.edtLog)
+
     def choose_file(self):
         dialog = QtWidgets.QFileDialog()
         dialog.setWindowTitle('Chọn file XML')
@@ -131,13 +156,30 @@ class MainUI():
             return None
 
     def click_btnRun(self):
+        self.processBar.setValue(10)
         if (self.xml_path == ''):
             return
         read_xml = ReadXML(self.xml_path)
         read_xml.read_file()
         read_xml.init_xml_table()
         data_conn.get_xml1()
+        self.processBar.setValue(10)
+        ma_lk = None
         self.init_xml1_table()
+        self.processBar.setValue(20)
+        self.init_xml2_table(ma_lk)
+        self.processBar.setValue(40)
+        self.init_xml3_table(ma_lk)
+        self.processBar.setValue(60)
+        self.init_xml4_table(ma_lk)
+        self.processBar.setValue(80)
+        self.init_xml5_table(ma_lk)
+        self.processBar.setValue(100)
+    
+    def click_btnShowLog(self):
+        self.logDialog = QtWidgets.QDialog()
+        self.setupLogDialog(self.logDialog)
+        self.logDialog.show()
 
     def click_xml1_table(self):
         index = self.tbXML1.selectionModel().currentIndex()
@@ -153,6 +195,7 @@ class MainUI():
     def init_xml1_table(self):
         # center_col những column sẽ căn giữa (mặc định căn trái)
         center_col = [2,3,5,6,9,10,11,12]
+        right_col = [24,25,26,27,28,29,30,31]
         self.tbXML1.setRowCount(0)
         rows = data_conn.get_xml1()
         for i, row in enumerate(rows):
@@ -162,6 +205,8 @@ class MainUI():
                 item = QtWidgets.QTableWidgetItem(row[j])
                 if j in center_col:
                     item.setTextAlignment(QtCore.Qt.AlignCenter)
+                if j in right_col:
+                    item.setTextAlignment(QtCore.Qt.AlignRight)
                 if ( j < 3):
                     pass
                 elif (j <= 7):
@@ -188,6 +233,7 @@ class MainUI():
         # center_col những column sẽ căn giữa (mặc định căn trái)
         center_col = [1,2,3,4,5,6]
         self.tbXML3.setRowCount(0)
+        self.tbXML3.verticalHeader()
         rows = data_conn.get_xml3(ma_lk)
         for i, row in enumerate(rows):
             self.tbXML3.setRowCount(i + 1)
@@ -238,7 +284,25 @@ class MainUI():
         
         pass
 
+    def xml3_check(self):
+        xml3_log = ''
+        rows = data_conn.get_xml3(None)
+        for row in rows:
+            _ma_lk = row[1]
+            _ma_dv = row[3]
+            _ma_vt = row[4]
+            _ma_nhom = row[5]
+            _pham_vi = row[10]
 
+            if (_pham_vi == '2'):
+                xml3_log = xml3_log + f"Mã LK {_ma_lk} - lỗi phạm vi = 2\n"
+            if (_ma_nhom == '10' and _ma_vt == ''):
+                xml3_log = xml3_log + f"Mã LK {_ma_lk} - lỗi MA_VAT_TU không có dữ liệu\n"
+            if (_ma_nhom != '10' and _ma_dv == ''):
+                xml3_log = xml3_log + f"Mã LK {_ma_lk} - lỗi MA_DICH_VU không có dữ liệu\n"
+        
+        self.log = self.log + "XML3:\n" + xml3_log
+                
     def tag_name_check(self, xml_number):
         match xml_number:
             case 'XML1':

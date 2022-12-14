@@ -67,18 +67,32 @@ class dataConnection(object):
     # Get xml1 data
     def get_xml1(self):
         return self.cur.execute("SELECT * FROM xml1").fetchall()
-    # Get xml1 data
+
+
+    # Get xml2 data
     def get_xml2(self, ma_lk):
-        return self.cur.execute(f"SELECT * FROM xml2 WHERE ma_lk = '{ma_lk}'").fetchall()
-    # Get xml1 data
+        if (ma_lk != None):
+            return self.cur.execute(f"SELECT * FROM xml2 WHERE ma_lk = '{ma_lk}'").fetchall()
+        else:
+            return self.cur.execute(f"SELECT * FROM xml2").fetchall()
+    # Get xml3 data
     def get_xml3(self, ma_lk):
-        return self.cur.execute(f"SELECT * FROM xml3 WHERE ma_lk = '{ma_lk}'").fetchall()
-    # Get xml1 data
+        if (ma_lk != None):
+            return self.cur.execute(f"SELECT * FROM xml3 WHERE ma_lk = '{ma_lk}'").fetchall()
+        else:
+            return self.cur.execute(f"SELECT * FROM xml3").fetchall()
+    # Get xml4 data
     def get_xml4(self, ma_lk):
-        return self.cur.execute(f"SELECT * FROM xml4 WHERE ma_lk = '{ma_lk}'").fetchall()
-    # Get xml1 data
+        if(ma_lk != None):
+            return self.cur.execute(f"SELECT * FROM xml4 WHERE ma_lk = '{ma_lk}'").fetchall()
+        else:
+            return self.cur.execute(f"SELECT * FROM xml4").fetchall()
+    # Get xml5 data
     def get_xml5(self, ma_lk):
-        return self.cur.execute(f"SELECT * FROM xml5 WHERE ma_lk = '{ma_lk}'").fetchall()
+        if (ma_lk != None):
+            return self.cur.execute(f"SELECT * FROM xml5 WHERE ma_lk = '{ma_lk}'").fetchall()
+        else:
+            return self.cur.execute(f"SELECT * FROM xml5").fetchall()
 
 
     def delete_xml1_table(self):

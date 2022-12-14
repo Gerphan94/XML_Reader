@@ -44,8 +44,7 @@ class xml_table():
                 case "TEN_BENH" |"DIA_CHI":
                     table.setColumnWidth(i, 500)
     
-    def setupUi_XML3(self, table):
-        tags = ['MA_LK','STT','MA_DICH_VU','MA_VAT_TU','MA_NHOM','GOI_VTYT','TEN_VAT_TU','TEN_DICH_VU','DON_VI_TINH','PHAM_VI','SO_LUONG','DON_GIA','TT_THAU','TYLE_TT','THANH_TIEN','T_TRANTT','MUC_HUONG','T_NGUONKHAC','T_BNTT','T_BHTT','T_BNCCT','T_NGOAIDS','MA_KHOA','MA_GIUONG','MA_BAC_SI','MA_BENH','NGAY_YL','NGAY_KQ','MA_PTTT']
+    def setupUi_XML3(self, table, tags):
 
         #table = QtWidgets.QTableWidget()
         table.setColumnCount(len(tags))
@@ -60,10 +59,8 @@ class xml_table():
                 case "TEN_VAT_TU" | "TEN_DICH_VU":
                     table.setColumnWidth(i, 400)
                 
-    
-
-    def setupUi_XML4(self, table):
-        tags= ['MA_LK','STT','MA_DICH_VU','MA_CHI_SO','TEN_CHI_SO','GIA_TRI','MA_MAY','MO_TA','KET_LUAN','NGAY_KQ']
+    def setupUi_XML4(self, table, tags):
+        
         #table = QtWidgets.QTableWidget()
         table.setColumnCount(len(tags))
         table.setSelectionBehavior(QtWidgets.QTableView.SelectRows)
