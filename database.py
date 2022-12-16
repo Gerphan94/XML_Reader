@@ -94,7 +94,6 @@ class dataConnection(object):
         else:
             return self.cur.execute(f"SELECT * FROM xml5").fetchall()
 
-
     def delete_xml1_table(self):
         stm = "DELETE FROM xml1"
         try:
@@ -234,6 +233,15 @@ class dataConnection(object):
                 self.con.commit()
             except Exception as e:
                 print(str(e))
+
+    # CÁC HÀM ###############################################################
+    def get_icdCode(self, ma_lk):
+        stm = f"SELECT ma_benh, ma_benhkhac FROM xml1 WHERE ma_lk = '{ma_lk}'"
+        reusult = self.cur.execute(stm).fetchall()[0]
+        if (reusult[1] == ''):
+            return reusult[0]
+        else:
+            return reusult[0] + ';' + reusult[1]
 
 # if __name__ == "__main__":
 #     con = dataConnection()

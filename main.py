@@ -1,14 +1,13 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from bs4 import BeautifulSoup
 import base64
-from table_UI import *
+from table_UI import xml_table
 from readXML import ReadXML
 from database import dataConnection
 
 data_conn = dataConnection()
+table = xml_table()
 
-XML3_tags = ['MA_LK','STT','MA_DICH_VU','MA_VAT_TU','MA_NHOM','GOI_VTYT','TEN_VAT_TU','TEN_DICH_VU','DON_VI_TINH','PHAM_VI','SO_LUONG','DON_GIA','TT_THAU','TYLE_TT','THANH_TIEN','T_TRANTT','MUC_HUONG','T_NGUONKHAC','T_BNTT','T_BHTT','T_BNCCT','T_NGOAIDS','MA_KHOA','MA_GIUONG','MA_BAC_SI','MA_BENH','NGAY_YL','NGAY_KQ','MA_PTTT']
-XML4_tags= ['MA_LK','STT','MA_DICH_VU','MA_CHI_SO','TEN_CHI_SO','GIA_TRI','MA_MAY','MO_TA','KET_LUAN','NGAY_KQ']
 
 class MainUI():
     def __init__(self):
@@ -59,36 +58,31 @@ class MainUI():
 
         # TAG XML1
         self.tbXML1 = QtWidgets.QTableWidget()
-        xmltb_1= xml_table()
-        xmltb_1.setupUi_XML1(self.tbXML1)
+        table.setupUi_XML1(self.tbXML1)
         self.tbXML1.clicked.connect(self.click_xml1_table)
         xml1_l = QtWidgets.QVBoxLayout(self.tab_xml1)
         xml1_l.addWidget(self.tbXML1)
 
         # TAG 2
         self.tbXML2 = QtWidgets.QTableWidget()
-        xmltb_2= xml_table()
-        xmltb_2.setupUi_XML2(self.tbXML2)
+        table.setupUi_XML2(self.tbXML2)
         xml2_l = QtWidgets.QVBoxLayout(self.tab_xml2)
         xml2_l.addWidget(self.tbXML2)
 
         # TAB 3
         self.tbXML3 = QtWidgets.QTableWidget()
-        xmltb_3= xml_table()
-        xmltb_3.setupUi_XML3(self.tbXML3, XML3_tags)
+        table.setupUi_XML3(self.tbXML3)
         xml3_l = QtWidgets.QVBoxLayout(self.tab_xml3)
         xml3_l.addWidget(self.tbXML3)
         # XML 4
         self.tbXML4 = QtWidgets.QTableWidget()
-        xmltb_4= xml_table()
-        xmltb_4.setupUi_XML4(self.tbXML4, XML4_tags)
+        table.setupUi_XML4(self.tbXML4)
         xml4_l = QtWidgets.QVBoxLayout(self.tab_xml4)
         xml4_l.addWidget(self.tbXML4)
 
         # XML 5
         self.tbXML5 = QtWidgets.QTableWidget()
-        xmltb_5= xml_table()
-        xmltb_5.setupUi_XML5(self.tbXML5)
+        table.setupUi_XML5(self.tbXML5)
         xml5_l = QtWidgets.QVBoxLayout(self.tab_xml5)
         xml5_l.addWidget(self.tbXML5)
 
@@ -230,8 +224,11 @@ class MainUI():
                 self.tbXML2.setItem(i, j-1, item)
     
     def init_xml3_table(self, ma_lk):
+        
         # center_col những column sẽ căn giữa (mặc định căn trái)
-        center_col = [1,2,3,4,5,6]
+        center_col, right_col = table.init_align_colum("XML3")
+        print(center_col)
+        print(right_col)
         self.tbXML3.setRowCount(0)
         self.tbXML3.verticalHeader()
         rows = data_conn.get_xml3(ma_lk)
@@ -242,6 +239,8 @@ class MainUI():
                 item = QtWidgets.QTableWidgetItem(row[j])
                 if j in center_col:
                     item.setTextAlignment(QtCore.Qt.AlignCenter)
+                if j in right_col:
+                    item.setTextAlignment(QtCore.Qt.AlignRight)
                 self.tbXML3.setItem(i, j-1, item)
 
     def init_xml4_table(self, ma_lk):
@@ -292,15 +291,36 @@ class MainUI():
             _ma_dv = row[3]
             _ma_vt = row[4]
             _ma_nhom = row[5]
+            
             _pham_vi = row[10]
+            _ma_khoa = row[23]
+            _ma_giuong = row[24]
+            _ma_benh = row[26]
 
             if (_pham_vi == '2'):
-                xml3_log = xml3_log + f"Mã LK {_ma_lk} - lỗi phạm vi = 2\n"
-            if (_ma_nhom == '10' and _ma_vt == ''):
-                xml3_log = xml3_log + f"Mã LK {_ma_lk} - lỗi MA_VAT_TU không có dữ liệu\n"
-            if (_ma_nhom != '10' and _ma_dv == ''):
-                xml3_log = xml3_log + f"Mã LK {_ma_lk} - lỗi MA_DICH_VU không có dữ liệu\n"
-        
+                xml3_log = xml3_log + f"Mã LK {_ma_lk} - Lỗi phạm vi = 2\n"
+            if (_ma_nhom == '10'):
+                if (_ma_vt ==''):
+                    xml3_log = xml3_log + f"Mã LK {_ma_lk} - MA_VAT_TU không được trống khi MA_NHOM = 10\n"
+            else:
+                if (_ma_nhom == '14' or _ma_nhom == '15'):
+                    if (_ma_giuong == ''):
+                        xml3_log = xml3_log + f"Mã LK {_ma_lk} - MA_GIUONG không được trống khi MA_NHOM = {_ma_nhom}\n"
+                else:
+                    if (_ma_giuong != ''):
+                        xml3_log = xml3_log + f"Mã LK {_ma_lk} - MA_GIUONG phải để trống khi MA_NHOM = {_ma_nhom}\n"
+            # Kiểm tra mã khoa (Dữ liệu bắt buộc)
+            if (_ma_khoa == ''):
+                xml3_log = xml3_log + f"Mã LK {_ma_lk} - MA_KHOA không có dữ liệu\n"
+            # Kiểm tra MA_BENH Mã bệnh bao gồm mã bệnh chính và các mã bệnh kèm theo
+            icd_list = data_conn.get_icdCode(_ma_lk)
+            if (_ma_benh != icd_list):
+                xml3_log = xml3_log + f"Mã LK {_ma_lk} - MA_BENH không đúng dữ liệu\n"
+           
+
+
+
+
         self.log = self.log + "XML3:\n" + xml3_log
                 
     def tag_name_check(self, xml_number):
