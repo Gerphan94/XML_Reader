@@ -68,6 +68,10 @@ class dataConnection(object):
     def get_xml1(self):
         return self.cur.execute("SELECT * FROM xml1").fetchall()
 
+    def get_malk(self):
+        return [row[0] for row in self.cur.execute("SELECT ma_lk FROM xml1").fetchall()]
+
+
 
     # Get xml2 data
     def get_xml2(self, ma_lk):

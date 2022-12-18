@@ -39,10 +39,8 @@ class xml_table():
             match tag:
                 case "STT":
                     table.setColumnWidth(i, 50)
-                case "GIOI_TINH":
-                    table.setColumnWidth(i, 80)
-                case "HO_TEN":
-                    table.setColumnWidth(i, 150)
+                case "LIEU_DUNG":
+                    table.setColumnWidth(i, 300)
                 case "TEN_BENH" |"DIA_CHI":
                     table.setColumnWidth(i, 500)
     # XML3 TABLE -----------------------------------
@@ -105,7 +103,14 @@ class xml_table():
             case "XML1":
                 ...
             case "XML2":
-                ...
+                c_column = ['MA_LK','STT','MA_THUOC','MA_NHOM','DON_VI_TINH','HAM_LUONG','DUONG_DUNG','SO_DANG_KY','PHAM_VI','TYLE_TT','MUC_HUONG','MA_KHOA','MA_BAC_SI','MA_BENH','NGAY_YL','MA_PTTT']
+                r_column = ['SO_LUONG','DON_GIA','THANH_TIEN','T_NGUONKHAC','T_BNTT','T_BHTT','T_BNCCT','T_NGOAIDS']
+                for i, ele in enumerate(self.XML2_COL):
+                    if ele in c_column:
+                        center_col.append(i+1)
+                    elif ele in r_column:
+                        right_col.append(i+1)
+                
             case "XML3":
                 c_column = ['MA_LK','STT','MA_DICH_VU','MA_VAT_TU','MA_NHOM','GOI_VTYT','DON_VI_TINH','PHAM_VI','TYLE_TT','MUC_HUONG','MA_KHOA','MA_GIUONG','MA_BAC_SI','MA_BENH','NGAY_YL','NGAY_KQ','MA_PTTT']
                 r_column = ['SO_LUONG','DON_GIA','THANH_TIEN','T_TRANTT','T_NGUONKHAC','T_BNTT','T_BHTT','T_BNCCT','T_NGOAIDS']

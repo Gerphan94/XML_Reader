@@ -2,17 +2,21 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from bs4 import BeautifulSoup
 import base64
 from table_UI import xml_table
+from logForm import logForm
 from readXML import ReadXML
 from database import dataConnection
+from xml_check import xml_check
+from document import DocumentForm
 
 data_conn = dataConnection()
 table = xml_table()
+xml_ck = xml_check()
 
 
 class MainUI():
     def __init__(self):
         self.xml_path = data_conn.get_path()
-        self.log = ''
+        self.log = []
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -31,6 +35,7 @@ class MainUI():
         self.btnChooseFile = QtWidgets.QPushButton("Chọn File")
         self.btnChooseFile.clicked.connect(self.choose_file)
         self.btnRun = QtWidgets.QPushButton("Khởi tạo")
+        self.btnRun.setShortcut("Ctrl+R")
         self.btnRun.clicked.connect(self.click_btnRun)
         self.processBar = QtWidgets.QProgressBar()
         self.processBar.setMaximum(100)
@@ -87,25 +92,17 @@ class MainUI():
         xml5_l.addWidget(self.tbXML5)
 
         GB1 = QtWidgets.QGroupBox()
-
-        self.btnxml1_check = QtWidgets.QPushButton('XML1')
-        self.btnxml1_check.clicked.connect(self.xml1_check)
-        self.btnxml2_check = QtWidgets.QPushButton('XML2')
-        self.btnxml3_check = QtWidgets.QPushButton('XML3')
-        self.btnxml3_check.clicked.connect(self.xml3_check)
-        self.btnxml4_check = QtWidgets.QPushButton('XML4')
-        self.btnxml5_check = QtWidgets.QPushButton('XML5')
+        self.btnDocumnet = QtWidgets.QPushButton("Mô tả:")
+        self.btnDocumnet.clicked.connect(self.click_Document)
+        self.btnxml_check = QtWidgets.QPushButton('Kiểm tra')
+        self.btnxml_check.clicked.connect(self.click_btnCheck)
         self.btnShowLog = QtWidgets.QPushButton("Show Log")
-        self.btnShowLog.clicked.connect(self.click_btnShowLog)
-
+        self.btnShowLog.clicked.connect(self.showLog)
 
         gb1_l = QtWidgets.QHBoxLayout(GB1)
+        gb1_l.addWidget(self.btnDocumnet)
         gb1_l.addStretch(1)
-        gb1_l.addWidget(self.btnxml1_check)
-        gb1_l.addWidget(self.btnxml2_check)
-        gb1_l.addWidget(self.btnxml3_check)
-        gb1_l.addWidget(self.btnxml4_check)
-        gb1_l.addWidget(self.btnxml5_check)
+        gb1_l.addWidget(self.btnxml_check)
         gb1_l.addWidget(self.btnShowLog)
 
         self.list_log = QtWidgets.QListWidget()
@@ -170,9 +167,20 @@ class MainUI():
         self.init_xml5_table(ma_lk)
         self.processBar.setValue(100)
     
-    def click_btnShowLog(self):
+    def click_Document(self):
+        self.dcmDialog = QtWidgets.QDialog()
+        self.dcm = DocumentForm()
+        self.dcm.setupUI(self.dcmDialog)
+        self.dcmDialog.show()
+    
+    def click_btnCheck(self):
+        self.xml_check()
+        self.showLog()
+    
+    def showLog(self):
         self.logDialog = QtWidgets.QDialog()
-        self.setupLogDialog(self.logDialog)
+        self.logForm = logForm(self.log)
+        self.logForm.setupUi(self.logDialog)
         self.logDialog.show()
 
     def click_xml1_table(self):
@@ -211,7 +219,7 @@ class MainUI():
   
     def init_xml2_table(self, ma_lk):
         # center_col những column sẽ căn giữa (mặc định căn trái)
-        center_col = [2,4,6,8,12]
+        center_col, right_col = table.init_align_colum("XML2")
         self.tbXML2.setRowCount(0)
         rows = data_conn.get_xml2(ma_lk)
         for i, row in enumerate(rows):
@@ -221,14 +229,14 @@ class MainUI():
                 item = QtWidgets.QTableWidgetItem(row[j])
                 if j in center_col:
                     item.setTextAlignment(QtCore.Qt.AlignCenter)
+                if j in right_col:
+                    item.setTextAlignment(QtCore.Qt.AlignRight)
                 self.tbXML2.setItem(i, j-1, item)
     
     def init_xml3_table(self, ma_lk):
         
         # center_col những column sẽ căn giữa (mặc định căn trái)
         center_col, right_col = table.init_align_colum("XML3")
-        print(center_col)
-        print(right_col)
         self.tbXML3.setRowCount(0)
         self.tbXML3.verticalHeader()
         rows = data_conn.get_xml3(ma_lk)
@@ -270,76 +278,50 @@ class MainUI():
                 if j in center_col:
                     item.setTextAlignment(QtCore.Qt.AlignCenter)
                 self.tbXML5.setItem(i, j-1, item)
-  
     
-    def xml1_check(self):
-        # Kiểm tra ngày vào - ngày ra
-        ngay_vao = self.xml1.find('NGAY_VAO')
-        ngay_ra = self.xml1.find('NGAY_VAO')
-        if (len(ngay_vao.text) != 12 ):
-            print('thẻ <NGAY_VAO> không hợp lệ ')
-        if (len(ngay_ra.text) != 12 ):
-            print('thẻ <NGAY_RA> không hợp lệ ')
+
+    # CÁC FUNCTION KIỂM TRA XML
+
+    def xml_check(self):
+        self.log.clear()
+        malks = data_conn.get_malk()
+        for malk in malks:
+            malk_log = []
+            xml_log = []
+            malk_log.append(malk)
+            xml1_log = self.xml1_check(malk)
+            xml2_log = xml_ck.xml2_check(malk)
+            xml3_log = xml_ck.xml3_check(malk)
+            xml4_log = self.xml4_check(malk)
+            xml5_log = self.xml5_check(malk)
+            xml_log.append(xml1_log)
+            xml_log.append(xml2_log)
+            xml_log.append(xml3_log)
+            xml_log.append(xml4_log)
+            xml_log.append(xml5_log)
+            malk_log.append(xml_log)
+            self.log.append(malk_log)
         
-        pass
 
-    def xml3_check(self):
-        xml3_log = ''
-        rows = data_conn.get_xml3(None)
-        for row in rows:
-            _ma_lk = row[1]
-            _ma_dv = row[3]
-            _ma_vt = row[4]
-            _ma_nhom = row[5]
-            
-            _pham_vi = row[10]
-            _ma_khoa = row[23]
-            _ma_giuong = row[24]
-            _ma_benh = row[26]
-
-            if (_pham_vi == '2'):
-                xml3_log = xml3_log + f"Mã LK {_ma_lk} - Lỗi phạm vi = 2\n"
-            if (_ma_nhom == '10'):
-                if (_ma_vt ==''):
-                    xml3_log = xml3_log + f"Mã LK {_ma_lk} - MA_VAT_TU không được trống khi MA_NHOM = 10\n"
-            else:
-                if (_ma_nhom == '14' or _ma_nhom == '15'):
-                    if (_ma_giuong == ''):
-                        xml3_log = xml3_log + f"Mã LK {_ma_lk} - MA_GIUONG không được trống khi MA_NHOM = {_ma_nhom}\n"
-                else:
-                    if (_ma_giuong != ''):
-                        xml3_log = xml3_log + f"Mã LK {_ma_lk} - MA_GIUONG phải để trống khi MA_NHOM = {_ma_nhom}\n"
-            # Kiểm tra mã khoa (Dữ liệu bắt buộc)
-            if (_ma_khoa == ''):
-                xml3_log = xml3_log + f"Mã LK {_ma_lk} - MA_KHOA không có dữ liệu\n"
-            # Kiểm tra MA_BENH Mã bệnh bao gồm mã bệnh chính và các mã bệnh kèm theo
-            icd_list = data_conn.get_icdCode(_ma_lk)
-            if (_ma_benh != icd_list):
-                xml3_log = xml3_log + f"Mã LK {_ma_lk} - MA_BENH không đúng dữ liệu\n"
-           
-
-
-
-
-        self.log = self.log + "XML3:\n" + xml3_log
-                
-    def tag_name_check(self, xml_number):
-        match xml_number:
-            case 'XML1':
-                standard_tag_name = [""]
-            case 'XML2':
-                standard_tag_name = [""]
-            case 'XML3':
-                standard_tag_name = ['MA_LK','STT','MA_DICH_VU','MA_VAT_TU','MA_NHOM','GOI_VTYT','TEN_VAT_TU','TEN_DICH_VU','DON_VI_TINH','PHAM_VI','SO_LUONG','DON_GIA','TT_THAU','TYLE_TT','THANH_TIEN','T_TRANTT','MUC_HUONG','T_NGUONKHAC','T_BNTT','T_BHTT','T_BNCCT','T_NGOAIDS','MA_KHOA','MA_GIUONG','MA_BAC_SI','MA_BENH','NGAY_YL','NGAY_KQ','MA_PTTT']
-
-            case 'XML4':
-                standard_tag_name = [""]
-            case 'XML5':
-                standard_tag_name = [""]
-
+    def xml1_check(self, malk):
+        _log = []
+        return _log
     
+    def xml2_check(self,malk):
+        _log = []
+        return _log
 
-
+    def xml3_check(self, malk):
+        ...
+    
+    def xml4_check(self, malk):
+        _log = []
+        return _log
+    
+    def xml5_check(self, malk):
+        _log = []
+        return _log
+                
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
