@@ -1,12 +1,13 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from bs4 import BeautifulSoup
-import base64
+import base64, os.path
 from table_UI import xml_table
 from logForm import logForm
 from readXML import ReadXML
 from database import dataConnection
 from xml_check import xml_check
 from document import DocumentForm
+from testcase import TestCase
 
 data_conn = dataConnection()
 table = xml_table()
@@ -94,6 +95,9 @@ class MainUI():
         GB1 = QtWidgets.QGroupBox()
         self.btnDocumnet = QtWidgets.QPushButton("Mô tả:")
         self.btnDocumnet.clicked.connect(self.click_Document)
+        self.btnTestCase = QtWidgets.QPushButton("Testcase:")
+        self.btnTestCase.clicked.connect(self.click_Testcase)
+
         self.btnxml_check = QtWidgets.QPushButton('Kiểm tra')
         self.btnxml_check.clicked.connect(self.click_btnCheck)
         self.btnShowLog = QtWidgets.QPushButton("Show Log")
@@ -101,6 +105,7 @@ class MainUI():
 
         gb1_l = QtWidgets.QHBoxLayout(GB1)
         gb1_l.addWidget(self.btnDocumnet)
+        gb1_l.addWidget(self.btnTestCase)
         gb1_l.addStretch(1)
         gb1_l.addWidget(self.btnxml_check)
         gb1_l.addWidget(self.btnShowLog)
@@ -147,17 +152,27 @@ class MainUI():
             return None
 
     def click_btnRun(self):
-        self.processBar.setValue(10)
+        if not(os.path.exists(self.xml_path)):
+            return
         if (self.xml_path == ''):
             return
+        self.processBar.setValue(2)
+        
         read_xml = ReadXML(self.xml_path)
         read_xml.read_file()
-        read_xml.init_xml_table()
-        data_conn.get_xml1()
         self.processBar.setValue(10)
+        read_xml.init_xml_table()
+        # Chuyển sang xử lý trong hàm để có thể thiết lập process
+        
+
+
+
+
+        data_conn.get_xml1()
+        self.processBar.setValue(20)
         ma_lk = None
         self.init_xml1_table()
-        self.processBar.setValue(20)
+        self.processBar.setValue(30)
         self.init_xml2_table(ma_lk)
         self.processBar.setValue(40)
         self.init_xml3_table(ma_lk)
@@ -172,6 +187,12 @@ class MainUI():
         self.dcm = DocumentForm()
         self.dcm.setupUI(self.dcmDialog)
         self.dcmDialog.show()
+
+    def click_Testcase(self):
+        self.tcDialog = QtWidgets.QDialog()
+        self.tc = TestCase()
+        self.tc.setupUI(self.tcDialog)
+        self.tcDialog.show()
     
     def click_btnCheck(self):
         self.xml_check()
@@ -226,12 +247,15 @@ class MainUI():
             self.tbXML2.setRowCount(i + 1)
             self.tbXML2.setRowHeight(i, 9)
             for j in range(1, len(row)):
+                
                 item = QtWidgets.QTableWidgetItem(row[j])
                 if j in center_col:
                     item.setTextAlignment(QtCore.Qt.AlignCenter)
                 if j in right_col:
                     item.setTextAlignment(QtCore.Qt.AlignRight)
                 self.tbXML2.setItem(i, j-1, item)
+    
+    
     
     def init_xml3_table(self, ma_lk):
         
@@ -289,7 +313,7 @@ class MainUI():
             malk_log = []
             xml_log = []
             malk_log.append(malk)
-            xml1_log = self.xml1_check(malk)
+            xml1_log = xml_ck.xml1_check(malk)
             xml2_log = xml_ck.xml2_check(malk)
             xml3_log = xml_ck.xml3_check(malk)
             xml4_log = self.xml4_check(malk)

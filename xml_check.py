@@ -7,7 +7,27 @@ class xml_check():
         pass
 
     def xml1_check(sefl,malk):
-        ...
+        _log = []
+        rows = dt_conn.get_xml1(malk)
+        for row in rows:
+            _ma_lk = row[1]
+            _songay_dtri = row[21]
+            _ketqua_dtri = row[22]
+            _tinhtrang_rv = row[23]
+            _ma_loai_kcb = row[35]
+
+            if (_ma_loai_kcb == '1'):
+                if (_songay_dtri != '1'):
+                    _log.append("SO_NGAY_DTRI <> 1 với LOAI = Khám bệnh")
+                if (_ketqua_dtri != '1'):
+                    _log.append("KET_QUA_DTRI <> 1 với LOAI = Khám bệnh")
+                if (_tinhtrang_rv != '1'):
+                    _log.append("TINH_TRANG_RV <> 1 với LOAI = Khám bệnh")
+
+
+
+
+        return _log
     
     def xml2_check(self, malk):
         _log = []
@@ -100,7 +120,7 @@ class xml_check():
                 _log.append("Lỗi PHAM_VI = 2")
             if (_ma_nhom == '10'):
                 if (_ma_vt ==''):
-                    _log.append("MA_VAT trống")
+                    _log.append("MA_VAT_TU trống")
             else:
                 if (_ma_nhom == '14' or _ma_nhom == '15'):
                     if (_ma_giuong == ''):

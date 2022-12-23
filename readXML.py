@@ -30,6 +30,7 @@ class ReadXML(object):
         dt_conn.delete_xml5_table()
 
         file_hoso_list = self.xml_content.find_all('FILEHOSO')
+        print(len(file_hoso_list))
         for file in file_hoso_list:
             loai_hs = file.find('LOAIHOSO')
             nd_hs = file.find('NOIDUNGFILE')

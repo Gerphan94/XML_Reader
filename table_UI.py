@@ -39,8 +39,11 @@ class xml_table():
             match tag:
                 case "STT":
                     table.setColumnWidth(i, 50)
+                case "MA_KHOA" | "TYLE_TT" | "PHAM_VI":
+                    table.setColumnWidth(i, 70)
                 case "LIEU_DUNG":
                     table.setColumnWidth(i, 300)
+
                 case "TEN_BENH" |"DIA_CHI":
                     table.setColumnWidth(i, 500)
     # XML3 TABLE -----------------------------------
@@ -103,7 +106,7 @@ class xml_table():
             case "XML1":
                 ...
             case "XML2":
-                c_column = ['MA_LK','STT','MA_THUOC','MA_NHOM','DON_VI_TINH','HAM_LUONG','DUONG_DUNG','SO_DANG_KY','PHAM_VI','TYLE_TT','MUC_HUONG','MA_KHOA','MA_BAC_SI','MA_BENH','NGAY_YL','MA_PTTT']
+                c_column = ['MA_LK','STT','MA_THUOC','MA_NHOM','DON_VI_TINH','HAM_LUONG','DUONG_DUNG','PHAM_VI','TYLE_TT','MUC_HUONG','MA_KHOA','MA_BAC_SI','MA_BENH','NGAY_YL','MA_PTTT']
                 r_column = ['SO_LUONG','DON_GIA','THANH_TIEN','T_NGUONKHAC','T_BNTT','T_BHTT','T_BNCCT','T_NGOAIDS']
                 for i, ele in enumerate(self.XML2_COL):
                     if ele in c_column:

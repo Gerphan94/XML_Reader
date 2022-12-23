@@ -65,12 +65,14 @@ class dataConnection(object):
 
     # GET XML
     # Get xml1 data
-    def get_xml1(self):
-        return self.cur.execute("SELECT * FROM xml1").fetchall()
-
+    def get_xml1(self, malk = ''):
+        if (malk == ''):
+            return self.cur.execute(f"SELECT * FROM xml1").fetchall()
+        else:
+            return self.cur.execute(f"SELECT * FROM xml1 WHERE ma_lk = '{malk}'").fetchall()
+        
     def get_malk(self):
         return [row[0] for row in self.cur.execute("SELECT ma_lk FROM xml1").fetchall()]
-
 
 
     # Get xml2 data
@@ -237,6 +239,12 @@ class dataConnection(object):
                 self.con.commit()
             except Exception as e:
                 print(str(e))
+    
+    def get_tag(self, xml_id):
+        stm = f"SELECT * FROM tag WHERE xml = {xml_id}"
+        return self.cur.execute(stm).fetchall()
+        
+        
 
     # CÁC HÀM ###############################################################
     def get_icdCode(self, ma_lk):
@@ -246,6 +254,12 @@ class dataConnection(object):
             return reusult[0]
         else:
             return reusult[0] + ';' + reusult[1]
+
+    def get_testcase(self):
+        stm = f"SELECT * FROM testcase"
+        return self.cur.execute(stm).fetchall()
+
+
 
 # if __name__ == "__main__":
 #     con = dataConnection()

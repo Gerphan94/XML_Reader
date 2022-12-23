@@ -12,7 +12,7 @@ class logForm():
         Form.setMinimumSize(800, 670)
 
         self.TREE = QtWidgets.QTreeWidget()
-        self.TREE.setColumnCount(3)
+        self.TREE.setColumnCount(1)
 
         main_l = QtWidgets.QVBoxLayout(Form)
         main_l.addWidget(self.TREE)
@@ -31,13 +31,13 @@ class logForm():
                 if (len(ele) != 0):
                     errors = ele
                     child1 = QtWidgets.QTreeWidgetItem()
-                    child1.setText(1, f"XML{i}")
+                    child1.setText(0, f"XML{i}")
                     
                     if (len(errors) !=0):
                         
                         for ele in errors:
                             child2 = QtWidgets.QTreeWidgetItem()    
-                            child2.setText(2, ele)
+                            child2.setText(0, ele)
                             child1.addChild(child2)
                     item.addChild(child1)
             self.TREE.addTopLevelItem(item)
