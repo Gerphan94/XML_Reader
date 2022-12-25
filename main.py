@@ -9,14 +9,14 @@ from xml_check import xml_check
 from document import DocumentForm
 from testcase import TestCase
 
-data_conn = dataConnection()
+dt_conn = dataConnection()
 table = xml_table()
 xml_ck = xml_check()
 
 
 class MainUI():
     def __init__(self):
-        self.xml_path = data_conn.get_path()
+        self.xml_path = dt_conn.get_path()
         self.log = []
 
     def setupUi(self, MainWindow):
@@ -35,21 +35,23 @@ class MainUI():
         self.edtPath.setText(self.xml_path)
         self.btnChooseFile = QtWidgets.QPushButton("Chọn File")
         self.btnChooseFile.clicked.connect(self.choose_file)
-        self.btnRun = QtWidgets.QPushButton("Khởi tạo")
-        self.btnRun.setShortcut("Ctrl+R")
-        self.btnRun.clicked.connect(self.click_btnRun)
+        self.btnLoad = QtWidgets.QPushButton("Xem")
+        self.btnLoad.setShortcut("Ctrl+R")
+        self.btnLoad.clicked.connect(self.init_table)
         self.processBar = QtWidgets.QProgressBar()
         self.processBar.setMaximum(100)
-        self.processBar.setFixedHeight(15)
+        self.processBar.setFixedHeight(20)
 
         hbox1 = QtWidgets.QHBoxLayout()
         hbox1.addWidget(self.lb1)
         hbox1.addWidget(self.edtPath)
         hbox1.addWidget(self.btnChooseFile)
-        hbox1.addWidget(self.btnRun)
+        hbox1.addWidget(self.btnLoad)
         self.TAB1 = QtWidgets.QTabWidget()
+        # self.TAB1.setFixedHeight(70)
         self.TAB2 = QtWidgets.QTabWidget()
         self.tab_xml1 = QtWidgets.QWidget()
+        
         self.tab_xml2 = QtWidgets.QWidget()
         self.tab_xml3 = QtWidgets.QWidget()
         self.tab_xml4 = QtWidgets.QWidget()
@@ -64,6 +66,7 @@ class MainUI():
 
         # TAG XML1
         self.tbXML1 = QtWidgets.QTableWidget()
+        # self.tbXML1.setHidden(True)
         table.setupUi_XML1(self.tbXML1)
         self.tbXML1.clicked.connect(self.click_xml1_table)
         xml1_l = QtWidgets.QVBoxLayout(self.tab_xml1)
@@ -147,40 +150,60 @@ class MainUI():
         if dialog.exec_() == QtWidgets.QDialog.Accepted:
             self.xml_path = str(dialog.selectedFiles()[0])
             self.edtPath.setText(self.xml_path)
-            data_conn.save_path(self.xml_path)
+            dt_conn.save_path(self.xml_path)
+            self.load_xmlfile()
         else:
             return None
 
-    def click_btnRun(self):
+    def load_xmlfile(self):
         if not(os.path.exists(self.xml_path)):
             return
         if (self.xml_path == ''):
             return
-        self.processBar.setValue(2)
-        
-        read_xml = ReadXML(self.xml_path)
-        read_xml.read_file()
-        self.processBar.setValue(10)
-        read_xml.init_xml_table()
-        # Chuyển sang xử lý trong hàm để có thể thiết lập process
-        
+        try:
+            with open(self.xml_path, 'r') as f:
+                data = f.read()
+        except Exception as e:
+            print(e)
+            return
+        self.xml_content = BeautifulSoup(data, "xml")
+        # Xóa hết các dữ liệu cũ
+        dt_conn.delete_xml1_table()
+        dt_conn.delete_xml2_table()
+        dt_conn.delete_xml3_table()
+        dt_conn.delete_xml4_table()
+        dt_conn.delete_xml5_table()
+        # Tìm tất cả tag
+        file_hoso_list = self.xml_content.find_all('FILEHOSO')
+        max_hs = len(file_hoso_list)
+        step = 95/max_hs
+        for i_step, file in enumerate(file_hoso_list):
+            loai_hs = file.find('LOAIHOSO')
+            nd_hs = file.find('NOIDUNGFILE')
+            match loai_hs.text:
+                case 'XML1':
+                    dt_conn.insert_xml1_table(nd_hs.text)
+                case 'XML2':
+                    dt_conn.insert_xml2_table(nd_hs.text)
+                case 'XML3':
+                    dt_conn.insert_xml3_table(nd_hs.text)
+                case 'XML4':
+                    dt_conn.insert_xml4_table(nd_hs.text)
+                case 'XML5':
+                    dt_conn.insert_xml5_table(nd_hs.text)
+            process_value = round(i_step*step)
 
-
-
-
-        data_conn.get_xml1()
-        self.processBar.setValue(20)
+            self.processBar.setValue(process_value)
+        self.init_table()
+        self.processBar.setValue(100)
+    
+    def init_table(self):
         ma_lk = None
         self.init_xml1_table()
-        self.processBar.setValue(30)
         self.init_xml2_table(ma_lk)
-        self.processBar.setValue(40)
         self.init_xml3_table(ma_lk)
-        self.processBar.setValue(60)
         self.init_xml4_table(ma_lk)
-        self.processBar.setValue(80)
         self.init_xml5_table(ma_lk)
-        self.processBar.setValue(100)
     
     def click_Document(self):
         self.dcmDialog = QtWidgets.QDialog()
@@ -220,7 +243,7 @@ class MainUI():
         center_col = [2,3,5,6,9,10,11,12]
         right_col = [24,25,26,27,28,29,30,31]
         self.tbXML1.setRowCount(0)
-        rows = data_conn.get_xml1()
+        rows = dt_conn.get_xml1()
         for i, row in enumerate(rows):
             self.tbXML1.setRowCount(i + 1)
             self.tbXML1.setRowHeight(i, 9)
@@ -241,18 +264,32 @@ class MainUI():
     def init_xml2_table(self, ma_lk):
         # center_col những column sẽ căn giữa (mặc định căn trái)
         center_col, right_col = table.init_align_colum("XML2")
+
         self.tbXML2.setRowCount(0)
-        rows = data_conn.get_xml2(ma_lk)
+        rows = dt_conn.get_xml2(ma_lk)
         for i, row in enumerate(rows):
+            
+            # gán 1 số biến hay dùng
+            ma_thuoc = row[3]
+            ma_nhom = row[4]
+            
+
             self.tbXML2.setRowCount(i + 1)
             self.tbXML2.setRowHeight(i, 9)
             for j in range(1, len(row)):
-                
                 item = QtWidgets.QTableWidgetItem(row[j])
                 if j in center_col:
                     item.setTextAlignment(QtCore.Qt.AlignCenter)
                 if j in right_col:
-                    item.setTextAlignment(QtCore.Qt.AlignRight)
+                    item.setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                
+                if (ma_nhom == '4'):
+                    if (j== 3 and row[j] == ''):
+                        item.setBackground(QtGui.QColor(255, 0, 0))
+                    if (j== 5 and row[j] == ''):
+                        item.setBackground(QtGui.QColor(255, 0, 0))
+                    if (j== 8 and row[j] == ''):
+                        item.setBackground(QtGui.QColor(255, 0, 0))
                 self.tbXML2.setItem(i, j-1, item)
     
     
@@ -263,23 +300,43 @@ class MainUI():
         center_col, right_col = table.init_align_colum("XML3")
         self.tbXML3.setRowCount(0)
         self.tbXML3.verticalHeader()
-        rows = data_conn.get_xml3(ma_lk)
+        rows = dt_conn.get_xml3(ma_lk)
         for i, row in enumerate(rows):
             self.tbXML3.setRowCount(i + 1)
             self.tbXML3.setRowHeight(i, 9)
+            # Gán các biến
+            ma_nhom = row[5]
+
+
+
+
             for j in range(1, len(row)):
-                item = QtWidgets.QTableWidgetItem(row[j])
+                value_str = row[j]
+
+                item = QtWidgets.QTableWidgetItem(value_str)
+                if (ma_nhom == '10'): #Nếu là vật tư
+                    if (j == 3 and value_str != ''):
+                        item.setBackground(QtGui.QColor(255, 0, 0))
+                    if (j == 4 and value_str == ''):
+                        item.setBackground(QtGui.QColor(255, 0, 0))
+                else:
+                    if (j == 3 and value_str == ''):
+                        item.setBackground(QtGui.QColor(255, 0, 0))
+                    if (j == 4 and value_str != ''):
+                        item.setBackground(QtGui.QColor(255, 0, 0))
+                    
+
                 if j in center_col:
                     item.setTextAlignment(QtCore.Qt.AlignCenter)
                 if j in right_col:
-                    item.setTextAlignment(QtCore.Qt.AlignRight)
+                    item.setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
                 self.tbXML3.setItem(i, j-1, item)
 
     def init_xml4_table(self, ma_lk):
         # center_col những column sẽ căn giữa (mặc định căn trái)
         center_col = [2,4,6,8,12]
         self.tbXML4.setRowCount(0)
-        rows = data_conn.get_xml4(ma_lk)
+        rows = dt_conn.get_xml4(ma_lk)
         for i, row in enumerate(rows):
             self.tbXML4.setRowCount(i + 1)
             self.tbXML4.setRowHeight(i, 9)
@@ -293,7 +350,7 @@ class MainUI():
         # center_col những column sẽ căn giữa (mặc định căn trái)
         center_col = [1,2]
         self.tbXML5.setRowCount(0)
-        rows = data_conn.get_xml5(ma_lk)
+        rows = dt_conn.get_xml5(ma_lk)
         for i, row in enumerate(rows):
             self.tbXML5.setRowCount(i + 1)
             self.tbXML5.setRowHeight(i, 9)
@@ -308,7 +365,7 @@ class MainUI():
 
     def xml_check(self):
         self.log.clear()
-        malks = data_conn.get_malk()
+        malks = dt_conn.get_malk()
         for malk in malks:
             malk_log = []
             xml_log = []

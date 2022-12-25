@@ -17,7 +17,7 @@ class xml_table():
         table.setSelectionMode(QtWidgets.QTableView.SingleSelection)
         table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         for i,tag in enumerate(self.XML1_COL):
-            table.setHorizontalHeaderItem(i, QtWidgets.QTableWidgetItem(tag))
+            table.setHorizontalHeaderItem(i, QtWidgets.QTableWidgetItem(tag + f' ({i+1})'))
             match tag:
                 case "STT":
                     table.setColumnWidth(i, 50)
@@ -35,17 +35,15 @@ class xml_table():
         table.setSelectionMode(QtWidgets.QTableView.SingleSelection)
         table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         for i,tag in enumerate(self.XML2_COL):
-            table.setHorizontalHeaderItem(i, QtWidgets.QTableWidgetItem(tag))
+            table.setHorizontalHeaderItem(i, QtWidgets.QTableWidgetItem(tag + f' ({i+1})'))
             match tag:
                 case "STT":
                     table.setColumnWidth(i, 50)
                 case "MA_KHOA" | "TYLE_TT" | "PHAM_VI":
                     table.setColumnWidth(i, 70)
-                case "LIEU_DUNG":
+                case "LIEU_DUNG" | "TEN_THUOC":
                     table.setColumnWidth(i, 300)
-
-                case "TEN_BENH" |"DIA_CHI":
-                    table.setColumnWidth(i, 500)
+               
     # XML3 TABLE -----------------------------------
     def setupUi_XML3(self, table):
 
@@ -55,10 +53,12 @@ class xml_table():
         table.setSelectionMode(QtWidgets.QTableView.SingleSelection)
         table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         for i,tag in enumerate(self.XML3_COL):
-            table.setHorizontalHeaderItem(i, QtWidgets.QTableWidgetItem(tag))
+            table.setHorizontalHeaderItem(i, QtWidgets.QTableWidgetItem(tag + f' ({i+1})'))
             match tag:
-                case "STT":
+                case "STT" | "TY_LE":
                     table.setColumnWidth(i, 50)
+                case "TYLE_TT":
+                    table.setColumnWidth(i, 70)
                 case "TEN_VAT_TU" | "TEN_DICH_VU":
                     table.setColumnWidth(i, 400)
               
@@ -70,7 +70,7 @@ class xml_table():
         table.setSelectionMode(QtWidgets.QTableView.SingleSelection)
         table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         for i,tag in enumerate(self.XML4_COL):
-            table.setHorizontalHeaderItem(i, QtWidgets.QTableWidgetItem(tag))
+            table.setHorizontalHeaderItem(i, QtWidgets.QTableWidgetItem(tag + f' ({i+1})'))
             match tag:
                 case "STT":
                     table.setColumnWidth(i, 50)
@@ -88,7 +88,7 @@ class xml_table():
         table.setSelectionMode(QtWidgets.QTableView.SingleSelection)
         table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         for i,tag in enumerate(self.XML5_COL):
-            table.setHorizontalHeaderItem(i, QtWidgets.QTableWidgetItem(tag))
+            table.setHorizontalHeaderItem(i, QtWidgets.QTableWidgetItem(tag + f' ({i+1})'))
             match tag:
                 case "STT":
                     table.setColumnWidth(i, 50)
