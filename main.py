@@ -13,6 +13,11 @@ dt_conn = dataConnection()
 table = xml_table()
 xml_ck = xml_check()
 
+# Setup color
+color_orange = QtGui.QColor("#FFD36E")
+color_red = QtGui.QColor("#FF0303")
+
+
 
 class MainUI():
     def __init__(self):
@@ -38,6 +43,16 @@ class MainUI():
         self.btnLoad = QtWidgets.QPushButton("Xem")
         self.btnLoad.setShortcut("Ctrl+R")
         self.btnLoad.clicked.connect(self.init_table)
+        self.rbAll = QtWidgets.QRadioButton("All")
+        self.rbAll.setChecked(True)
+        self.rbAll.clicked.connect(self.click_radio)
+        self.rbxml1 = QtWidgets.QRadioButton("Full XML1")
+        self.rbxml1.clicked.connect(self.click_radio)
+        self.rbnotxml1 = QtWidgets.QRadioButton("Hide XML1")
+        self.rbnotxml1.clicked.connect(self.click_radio)
+
+       
+
         self.processBar = QtWidgets.QProgressBar()
         self.processBar.setMaximum(100)
         self.processBar.setFixedHeight(20)
@@ -47,6 +62,10 @@ class MainUI():
         hbox1.addWidget(self.edtPath)
         hbox1.addWidget(self.btnChooseFile)
         hbox1.addWidget(self.btnLoad)
+        hbox1.addWidget(self.rbAll)
+        hbox1.addWidget(self.rbxml1)
+        hbox1.addWidget(self.rbnotxml1)
+
         self.TAB1 = QtWidgets.QTabWidget()
         # self.TAB1.setFixedHeight(70)
         self.TAB2 = QtWidgets.QTabWidget()
@@ -154,6 +173,23 @@ class MainUI():
             self.load_xmlfile()
         else:
             return None
+        
+    def click_radio(self):
+        isra1 = self.rbAll.isChecked()
+        isra2 = self.rbxml1.isChecked()
+        isra3 = self.rbnotxml1.isChecked()
+        if (isra1):
+            self.TAB1.setHidden(False)
+            self.TAB2.setHidden(False)
+        elif (isra2):
+            self.TAB1.setHidden(False)
+            self.TAB2.setHidden(True)
+        else:
+            self.TAB1.setHidden(True)
+            self.TAB2.setHidden(False)
+        pass
+    
+    
 
     def load_xmlfile(self):
         if not(os.path.exists(self.xml_path)):
@@ -285,11 +321,52 @@ class MainUI():
                 
                 if (ma_nhom == '4'):
                     if (j== 3 and row[j] == ''):
-                        item.setBackground(QtGui.QColor(255, 0, 0))
+                        item.setBackground(color_orange)
                     if (j== 5 and row[j] == ''):
-                        item.setBackground(QtGui.QColor(255, 0, 0))
+                        item.setBackground(color_orange)
                     if (j== 8 and row[j] == ''):
-                        item.setBackground(QtGui.QColor(255, 0, 0))
+                        item.setBackground(color_orange)
+                    if (j== 10 and row[j] == ''):
+                        item.setBackground(color_orange)
+                    if (j== 11 and row[j] == ''):
+                        item.setBackground(color_orange)
+                    if (j== 12 and row[j] != '1'):
+                        item.setBackground(color_red)
+                    if (j==17 and row[j] == '0'):
+                        item.setBackground(color_red)
+                # Check tiền
+                n_tyle = int(row[13])
+                n_sl = float(row[14])
+                n_dongia = float(row[15])
+                n_thanhtien = float(row[16])
+                # Check thành tiền
+                check_thanhtien = n_dongia*n_sl #Không nhân với ty_le
+                if (check_thanhtien != n_thanhtien) and (j==16):
+                    
+                    item.setBackground(color_red)
+
+                # Check BNTT và BHCT
+                n_MH = int(row[17])
+                check_BNTT = float(n_thanhtien*((100-n_tyle)/100))
+                check_BNTT = float("{:.2f}".format(check_BNTT))
+                check_BHTT = float(n_thanhtien*((n_tyle)/100)*(n_MH/100))
+                check_BHTT = float("{:.2f}".format(check_BHTT))
+                check_BNCCT = float(n_thanhtien*((n_tyle)/100)*((100-n_MH)/100))
+                check_BNCCT = float("{:.2f}".format(check_BNCCT))
+                n_BNTT = float(row[19])
+                n_BHTT = float(row[20])
+                n_BNCTT = float(row[21])
+                if (check_BNTT != n_BNTT) and (j==19):
+                    item.setBackground(color_red)
+                if (check_BHTT != n_BHTT) and (j==20):
+                    print(check_BHTT, n_BHTT)
+                    item.setBackground(color_red)
+                if (check_BNCCT != n_BNCTT) and (j==21):
+                    print(check_BNCCT, n_BNCTT)
+                    item.setBackground(color_red)
+
+                
+
                 self.tbXML2.setItem(i, j-1, item)
     
     

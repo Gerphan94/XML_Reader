@@ -34,6 +34,7 @@ class xml_table():
         table.setSelectionBehavior(QtWidgets.QTableView.SelectRows)
         table.setSelectionMode(QtWidgets.QTableView.SingleSelection)
         table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        table.setSortingEnabled(True)
         for i,tag in enumerate(self.XML2_COL):
             table.setHorizontalHeaderItem(i, QtWidgets.QTableWidgetItem(tag + f' ({i+1})'))
             match tag:

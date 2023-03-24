@@ -14,21 +14,17 @@ class TestCase():
         Form.setObjectName("logform")
         Form.setWindowTitle("Log")
         Form.setMinimumSize(1200, 670)
+        # self.edtCase = QtWidgets.QLineEdit()
+        # self.btnAddCase = QtWidgets.QPushButton("Add")
         lbTitle = QtWidgets.QLabel("Các case XML test")
         self.tb = QtWidgets.QTableWidget()
         self.tb.setColumnCount(3)
         self.header = self.tb.horizontalHeader()  
         self.header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
         self.tb.setHorizontalHeaderLabels(("Case","Expect","XML"))
-
         self.tb.setColumnWidth(1, 400)
-        
-
-
-
-
-
         main_l = QtWidgets.QVBoxLayout(Form)
+        
         main_l.addWidget(lbTitle)
         main_l.addWidget(self.tb)
         self.init_tb()
