@@ -17,7 +17,7 @@ class xml_table():
         table.setSelectionMode(QtWidgets.QTableView.SingleSelection)
         table.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         for i,tag in enumerate(self.XML1_COL):
-            table.setHorizontalHeaderItem(i, QtWidgets.QTableWidgetItem(tag + f' ({i+1})'))
+            table.setHorizontalHeaderItem(i, QtWidgets.QTableWidgetItem(tag + f'({i+1})'))
             match tag:
                 case "STT":
                     table.setColumnWidth(i, 50)

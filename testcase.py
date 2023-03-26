@@ -20,8 +20,9 @@ class TestCase():
         self.tb = QtWidgets.QTableWidget()
         self.tb.setColumnCount(3)
         self.header = self.tb.horizontalHeader()  
-        self.header.setSectionResizeMode(0, QtWidgets.QHeaderView.Stretch)
-        self.tb.setHorizontalHeaderLabels(("Case","Expect","XML"))
+        self.header.setSectionResizeMode(2, QtWidgets.QHeaderView.Stretch)
+        self.tb.setHorizontalHeaderLabels(("XML","Case","Expect"))
+        self.tb.setColumnWidth(0, 70)
         self.tb.setColumnWidth(1, 400)
         main_l = QtWidgets.QVBoxLayout(Form)
         
@@ -36,14 +37,17 @@ class TestCase():
             case = row[1]
             expect = row[2]
             xml = row[3]
+            xml_item = QtWidgets.QTableWidgetItem(str(xml))
+            xml_item.setTextAlignment(QtCore.Qt.AlignCenter)
             case_item = QtWidgets.QTableWidgetItem(str(case))
             expect_item = QtWidgets.QTableWidgetItem(str(expect))
-            xml_item = QtWidgets.QTableWidgetItem(str(xml))
+            
             self.tb.setRowCount(i+1)
             self.tb.setRowHeight(i, 9)
-            self.tb.setItem(i, 0, case_item)
-            self.tb.setItem(i, 1, expect_item)
-            self.tb.setItem(i, 2, xml_item)
+            self.tb.setItem(i, 0, xml_item)
+            self.tb.setItem(i, 1, case_item)
+            self.tb.setItem(i, 2, expect_item)
+            
    
 
 

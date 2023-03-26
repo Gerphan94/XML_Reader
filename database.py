@@ -249,17 +249,59 @@ class dataConnection(object):
     # CÁC HÀM ###############################################################
     def get_icdCode(self, ma_lk):
         stm = f"SELECT ma_benh, ma_benhkhac FROM xml1 WHERE ma_lk = '{ma_lk}'"
-        reusult = self.cur.execute(stm).fetchall()[0]
-        if (reusult[1] == ''):
-            return reusult[0]
+        result = self.cur.execute(stm).fetchall()[0]
+        if (result[1] == ''):
+            return result[0]
         else:
-            return reusult[0] + ';' + reusult[1]
+            return result[0] + ';' + result[1]
 
     def get_testcase(self):
         stm = f"SELECT * FROM testcase"
         return self.cur.execute(stm).fetchall()
+    
+    def expense_check(self, ma_lk):
+
+        stm1 = f"SELECT ma_lk, t_thuoc, t_vtyt, t_tongchi, t_bntt, t_bncct, t_bhtt FROM xml1 WHERE ma_lk = '{ma_lk}' "
+        stm2 = f"SELECT thanh_tien FROM xml2 WHERE ma_lk = '{ma_lk}' "
+        stm3 = f"SELECT thanh_tien FROM xml3 WHERE ma_lk = '{ma_lk}' AND ma_nhom = '10'"
+        xml1_result = self.cur.execute(stm1).fetchall()
+        tong_thuocs = self.cur.execute(stm2).fetchall()
+        tong_vtyts = self.cur.execute(stm3).fetchall()
+        tong_thuoc = 0
+        tong_vtyt = 0
+        for tien in tong_thuocs:
+            tong_thuoc += float(tien[0])
+        for tien in tong_vtyts:
+            tong_vtyt += float(tien[0])
+        print(xml1_result, tong_thuoc, tong_vtyt)
+       
 
 
+        return True
+
+    def get_tongthuoc(self, ma_lk):
+        stm = f"SELECT thanh_tien FROM xml2 WHERE ma_lk = '{ma_lk}' "
+        rows = self.cur.execute(stm).fetchall()
+        tong = 0
+        for row in rows:
+            tong += float(row[0]) 
+        return tong
+
+    def get_tongvtyt(self, ma_lk):
+        stm = f"SELECT thanh_tien FROM xml3 WHERE ma_lk = '{ma_lk}' AND ma_nhom = '10' "
+        rows = self.cur.execute(stm).fetchall()
+        tong = 0
+        for row in rows:
+            tong += float(row[0]) 
+        return tong
+    
+    def get_tongxml3(self, ma_lk):
+        stm = f"SELECT thanh_tien FROM xml3 WHERE ma_lk = '{ma_lk}'"
+        rows = self.cur.execute(stm).fetchall()
+        tong = 0
+        for row in rows:
+            tong += float(row[0]) 
+        return tong
 
 # if __name__ == "__main__":
 #     con = dataConnection()

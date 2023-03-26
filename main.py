@@ -8,6 +8,7 @@ from database import dataConnection
 from xml_check import xml_check
 from document import DocumentForm
 from testcase import TestCase
+from expense_check import Expense
 
 dt_conn = dataConnection()
 table = xml_table()
@@ -70,12 +71,15 @@ class MainUI():
         # self.TAB1.setFixedHeight(70)
         self.TAB2 = QtWidgets.QTabWidget()
         self.tab_xml1 = QtWidgets.QWidget()
+        self.tab_expense = QtWidgets.QWidget()
         
         self.tab_xml2 = QtWidgets.QWidget()
         self.tab_xml3 = QtWidgets.QWidget()
         self.tab_xml4 = QtWidgets.QWidget()
         self.tab_xml5 = QtWidgets.QWidget()
         self.TAB1.addTab(self.tab_xml1, "XML1")
+        self.TAB1.addTab(self.tab_expense, "Expense")
+
 
         self.TAB2.addTab(self.tab_xml2, "XML2")
         self.TAB2.addTab(self.tab_xml3, "XML3")
@@ -119,7 +123,8 @@ class MainUI():
         self.btnDocumnet.clicked.connect(self.click_Document)
         self.btnTestCase = QtWidgets.QPushButton("Testcase:")
         self.btnTestCase.clicked.connect(self.click_Testcase)
-
+        self.btnExpense_check = QtWidgets.QPushButton("KT chi phí")
+        self.btnExpense_check.clicked.connect(self.click_btnExpenseCheck)
         self.btnxml_check = QtWidgets.QPushButton('Kiểm tra')
         self.btnxml_check.clicked.connect(self.click_btnCheck)
         self.btnShowLog = QtWidgets.QPushButton("Show Log")
@@ -129,6 +134,8 @@ class MainUI():
         gb1_l.addWidget(self.btnDocumnet)
         gb1_l.addWidget(self.btnTestCase)
         gb1_l.addStretch(1)
+        
+        gb1_l.addWidget(self.btnExpense_check)
         gb1_l.addWidget(self.btnxml_check)
         gb1_l.addWidget(self.btnShowLog)
 
@@ -236,6 +243,7 @@ class MainUI():
     def init_table(self):
         ma_lk = None
         self.init_xml1_table()
+        
         self.init_xml2_table(ma_lk)
         self.init_xml3_table(ma_lk)
         self.init_xml4_table(ma_lk)
@@ -252,6 +260,12 @@ class MainUI():
         self.tc = TestCase()
         self.tc.setupUI(self.tcDialog)
         self.tcDialog.show()
+
+    def click_btnExpenseCheck(self):
+        self.epsDialog = QtWidgets.QDialog()
+        self.eps = Expense()
+        self.eps.setup_ui(self.epsDialog)
+        self.epsDialog.show()
     
     def click_btnCheck(self):
         self.xml_check()
@@ -276,25 +290,63 @@ class MainUI():
         
     def init_xml1_table(self):
         # center_col những column sẽ căn giữa (mặc định căn trái)
-        center_col = [2,3,5,6,9,10,11,12]
-        right_col = [24,25,26,27,28,29,30,31]
+        center_col = [2,3,5,6,9,10,11,12,16,19,20,21,22,23,24,33,34,35,37]
+        right_col = [25,26,27,28,29,30,31]
+        notnull_col = [8,9,10,11]
+        maybenull = []
         self.tbXML1.setRowCount(0)
         rows = dt_conn.get_xml1()
         for i, row in enumerate(rows):
             self.tbXML1.setRowCount(i + 1)
             self.tbXML1.setRowHeight(i, 9)
+
+            ma_lk = row[1]
+            ten_benh = str(row[13])
+            n_ten_benh = len(ten_benh.split(";"))
+            ma_benh_chinh = str(row[14])
+            n_ma_benh_chinh = len(ma_benh_chinh.split(";"))
+            ma_benh_khac = str(row[15])
+            if (ma_benh_khac == ""):
+                n_ma_benh_khac = 0
+            else:
+                n_ma_benh_khac = len(ma_benh_khac.split(";"))
+            n_ma_benh = n_ma_benh_chinh + n_ma_benh_khac
+            
             for j in range(1, len(row)):
                 item = QtWidgets.QTableWidgetItem(row[j])
                 if j in center_col:
                     item.setTextAlignment(QtCore.Qt.AlignCenter)
                 if j in right_col:
-                    item.setTextAlignment(QtCore.Qt.AlignRight)
-                if ( j < 3):
-                    pass
-                elif (j <= 7):
-                    item.setBackground(QtGui.QColor("#F9E0AE"))
-                elif (j <= 12):
-                    item.setBackground(QtGui.QColor("#CAE4DB"))
+                    item.setTextAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+                if j in notnull_col and row[j]== "":
+                    item.setBackground(color_red)
+                else:
+                    match j:
+                        case 15:
+                            if (n_ten_benh != n_ma_benh):
+                                item.setBackground(color_red)
+                        case 20:
+                            ngayvao = int(row[19])
+                            ngayra = int(row[20])
+                            if (ngayvao > ngayra):
+                                item.setBackground(color_red)
+                        case 24:
+                            ngayra = int(row[20])
+                            ngayqt = int(row[24])
+                            if ngayra > ngayqt:
+                                item.setBackground(color_red)
+                        case 25:
+                            xml2_tongthuoc = dt_conn.get_tongthuoc(ma_lk)
+                            tong_thuoc = float(row[25])
+                            if (xml2_tongthuoc != tong_thuoc):
+                                item.setBackground(color_red)
+                        case 26:
+                            xml3_tongvtyt = dt_conn.get_tongvtyt(ma_lk)
+                            tong_vtyt = float(row[26])
+                            if (xml3_tongvtyt != tong_vtyt):
+                                item.setBackground(color_red)
+                        case _:
+                            pass
                 self.tbXML1.setItem(i, j-1, item)
   
     def init_xml2_table(self, ma_lk):
@@ -308,8 +360,6 @@ class MainUI():
             # gán 1 số biến hay dùng
             ma_thuoc = row[3]
             ma_nhom = row[4]
-            
-
             self.tbXML2.setRowCount(i + 1)
             self.tbXML2.setRowHeight(i, 9)
             for j in range(1, len(row)):
@@ -437,6 +487,10 @@ class MainUI():
                     item.setTextAlignment(QtCore.Qt.AlignCenter)
                 self.tbXML5.setItem(i, j-1, item)
     
+    def costed_check(self):
+        pass
+
+
 
     # CÁC FUNCTION KIỂM TRA XML
 
