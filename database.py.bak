@@ -265,50 +265,29 @@ class dataConnection(object):
 
     
 
-    def get_chiphi_thuoc(self, ma_lk):
-        stm = f"SELECT thanh_tien, t_bntt, t_bhtt, t_bncct FROM xml2 WHERE ma_lk = '{ma_lk}' "
+    def get_tongthuoc(self, ma_lk):
+        stm = f"SELECT thanh_tien FROM xml2 WHERE ma_lk = '{ma_lk}' "
         rows = self.cur.execute(stm).fetchall()
-        thanh_tien = 0 
-        bntt = 0
-        bhtt = 0
-        bncct = 0
+        tong = 0
         for row in rows:
-            thanh_tien += float(row[0])
-            bntt += float(row[1])
-            bhtt += float(row[2])
-            bncct += float(row[3])
-            
-        return {"thanh_tien":thanh_tien, "bntt":bntt, "bhtt":bhtt, "bncct":bncct}
+            tong += float(row[0]) 
+        return tong
 
-    def get_chiphi_vtyt(self, ma_lk):
-        stm = f"SELECT thanh_tien, t_bntt, t_bhtt, t_bncct FROM xml3 WHERE ma_lk = '{ma_lk}' AND ma_nhom = '10' "
+    def get_tongvtyt(self, ma_lk):
+        stm = f"SELECT thanh_tien FROM xml3 WHERE ma_lk = '{ma_lk}' AND ma_nhom = '10' "
         rows = self.cur.execute(stm).fetchall()
-        thanh_tien = 0 
-        bntt = 0
-        bhtt = 0
-        bncct = 0
+        tong = 0
         for row in rows:
-            thanh_tien += float(row[0])
-            bntt += float(row[1])
-            bhtt += float(row[2])
-            bncct += float(row[3])
-            
-        return {"thanh_tien":thanh_tien, "bntt":bntt, "bhtt":bhtt, "bncct":bncct}
+            tong += float(row[0]) 
+        return tong
     
-    def get_chiphi_dichvu(self, ma_lk):
-        stm = f"SELECT thanh_tien, t_bntt, t_bhtt, t_bncct FROM xml3 WHERE ma_lk = '{ma_lk}' AND ma_nhom != '10'"
+    def get_tongxml3(self, ma_lk):
+        stm = f"SELECT thanh_tien FROM xml3 WHERE ma_lk = '{ma_lk}'"
         rows = self.cur.execute(stm).fetchall()
-        thanh_tien = 0 
-        bntt = 0
-        bhtt = 0
-        bncct = 0
+        tong = 0
         for row in rows:
-            thanh_tien += float(row[0])
-            bntt += float(row[1])
-            bhtt += float(row[2])
-            bncct += float(row[3])
-            
-        return {"thanh_tien":thanh_tien, "bntt":bntt, "bhtt":bhtt, "bncct":bncct}
+            tong += float(row[0]) 
+        return tong
 
     def get_k(self, ma_lk, goi):
         LCS = 1490000

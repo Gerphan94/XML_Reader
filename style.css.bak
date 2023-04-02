@@ -7,14 +7,9 @@ QMenuBar {
 	color: #000;
 	font-size: 11pt;
 }
-
-
 QMenuBar::item:selected  {
 	background-color: #343a49;
 	color: #fff;
-}
-Qmenu {
-	font-size: 11pt;
 }
 
 /* TAB */

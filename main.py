@@ -30,18 +30,46 @@ class MainUI():
         MainWindow.setWindowTitle("XML Check")
         MainWindow.setMinimumSize(1220, 670)
         CWget = QtWidgets.QWidget(MainWindow)
+        self.menuBar = QtWidgets.QMenuBar()
+
+        self.action_file = QtWidgets.QAction("File")
+        self.action_4210 = QtWidgets.QAction("4210xml")
+        self.action_case = QtWidgets.QAction("Testcase")
+
+        self.action_viewAll = QtWidgets.QAction("All")
+        self.action_viewAll.setCheckable(True)
+        self.action_viewAll.setChecked(True)
+        self.action_viewAll.triggered.connect(self.click_view_all)
+
+        self.action_viewxml1 = QtWidgets.QAction("XML1")
+        self.action_viewxml1.setCheckable(True)
+        self.action_viewxml1.triggered.connect(self.click_view_xml1)
+
+        self.action_viewNotxml1 = QtWidgets.QAction("! XML1")
+        self.action_viewNotxml1.setCheckable(True)
+        self.action_viewNotxml1.triggered.connect(self.click_view_notxml1)
+
+        self.action_load = QtWidgets.QAction("Load XML")
+        self.action_load.triggered.connect(self.load_xmlfile)
+        self.action_run = QtWidgets.QAction("Run")
+        self.action_run.setShortcut("F5")
+        self.action_run.setToolTip("F5")
+        self.action_run.triggered.connect(self.init_table)
+
+        self.viewMenu = QtWidgets.QMenu("View")
+        self.viewMenu.addActions([self.action_viewAll, self.action_viewxml1, self.action_viewNotxml1])
+
+        self.menuBar.addActions([self.action_file, self.action_4210, self.action_case])
+        self.menuBar.addMenu(self.viewMenu)
+        self.menuBar.addActions([self.action_load, self.action_run])
+        
+
         font = QtGui.QFont()
         font.setPixelSize(12)
         CWget.setFont(font)
         main_l = QtWidgets.QVBoxLayout(CWget)
-
-       
-       
-        
-
-
-
-
+     
+        main_l.setSpacing(5)
         self.TAB1 = QtWidgets.QTabWidget()
         # self.TAB1.setFixedHeight(70)
         self.TAB2 = QtWidgets.QTabWidget()
@@ -91,66 +119,14 @@ class MainUI():
         xml5_l = QtWidgets.QVBoxLayout(self.tab_xml5)
         xml5_l.addWidget(self.tbXML5)
 
-        # FOOTER 
-        # GB1
-        GB1 = QtWidgets.QGroupBox()
-        self.btnDocumnet = QtWidgets.QPushButton("Mô tả:")
-        self.btnDocumnet.clicked.connect(self.click_Document)
-        self.btnTestCase = QtWidgets.QPushButton("Testcase:")
-        self.btnTestCase.clicked.connect(self.click_Testcase)
-        GB1_l = QtWidgets.QHBoxLayout(GB1)
-        GB1_l.addWidget(self.btnDocumnet)
-        GB1_l.addWidget(self.btnTestCase)
-
-        GB2 = QtWidgets.QGroupBox()
-        self.rbAll = QtWidgets.QRadioButton("All")
-        self.rbAll.setChecked(True)
-        self.rbAll.clicked.connect(self.click_radio)
-        self.rbxml1 = QtWidgets.QRadioButton("Full XML1")
-        self.rbxml1.clicked.connect(self.click_radio)
-        self.rbnotxml1 = QtWidgets.QRadioButton("Hide XML1")
-        self.rbnotxml1.clicked.connect(self.click_radio)
-        GB2_l = QtWidgets.QHBoxLayout(GB2)
-        GB2_l.addWidget(self.rbAll)
-        GB2_l.addWidget(self.rbxml1)
-        GB2_l.addWidget(self.rbnotxml1)
-
-        GB3 = QtWidgets.QGroupBox()
-
-        self.btnChooseFile = QtWidgets.QPushButton("Chọn File")
-        self.btnChooseFile.clicked.connect(self.choose_file)
-        self.btnLoad = QtWidgets.QPushButton("Xem")
-        self.btnLoad.setShortcut("Ctrl+R")
-        self.btnLoad.clicked.connect(self.init_table)
-        GB3_l = QtWidgets.QHBoxLayout(GB3)
-        GB3_l.addWidget(self.btnChooseFile)
-        GB3_l.addWidget(self.btnLoad)
-
-        self.btnxml_check = QtWidgets.QPushButton('Kiểm tra')
-        self.btnxml_check.clicked.connect(self.click_btnCheck)
-        self.btnShowLog = QtWidgets.QPushButton("Show Log")
-        self.btnShowLog.clicked.connect(self.showLog)
-
-        self.list_log = QtWidgets.QListWidget()
-
         vbox1 = QtWidgets.QVBoxLayout()
         vbox1.addWidget(self.TAB1)
         vbox1.addWidget(self.TAB2)
-   
-
-        footer_l = QtWidgets.QHBoxLayout()
-        footer_l.addWidget(GB1)
-        footer_l.addStretch(1)
-        footer_l.addWidget(GB2)
-       
-        footer_l.addWidget(GB3)
-
 
         hbox2 = QtWidgets.QHBoxLayout()
         hbox2.addLayout(vbox1)
-        
+        main_l.addWidget(self.menuBar)
         main_l.addLayout(hbox2)
-        main_l.addLayout(footer_l)
         MainWindow.setCentralWidget(CWget)
     
     def setupLogDialog(self, dialog):
@@ -165,7 +141,7 @@ class MainUI():
         dialog_l = QtWidgets.QVBoxLayout(dialog)
         dialog_l.addWidget(self.edtLog)
 
-    def choose_file(self):
+    def load_xmlfile(self):
         self.loadingDialog = QtWidgets.QDialog()
         self.loading = Loading()
         self.loading.setup_ui(self.loadingDialog)
@@ -186,25 +162,27 @@ class MainUI():
         # else:
         #     return None
         
-    def click_radio(self):
-        isra1 = self.rbAll.isChecked()
-        isra2 = self.rbxml1.isChecked()
-        isra3 = self.rbnotxml1.isChecked()
-        if (isra1):
-            self.TAB1.setHidden(False)
-            self.TAB2.setHidden(False)
-        elif (isra2):
-            self.TAB1.setHidden(False)
-            self.TAB2.setHidden(True)
-        else:
-            self.TAB1.setHidden(True)
-            self.TAB2.setHidden(False)
-        pass
+    def click_view_all(self):
+        self.TAB1.setHidden(False)
+        self.TAB2.setHidden(False)
+        self.action_viewAll.setChecked(True)
+        self.action_viewxml1.setChecked(False)
+        self.action_viewNotxml1.setChecked(False)
     
+    def click_view_xml1(self):
+        self.TAB1.setHidden(False)
+        self.TAB2.setHidden(True)
+        self.action_viewAll.setChecked(False)
+        self.action_viewxml1.setChecked(True)
+        self.action_viewNotxml1.setChecked(False)
     
+    def click_view_notxml1(self):
+        self.TAB1.setHidden(True)
+        self.TAB2.setHidden(False)
+        self.action_viewAll.setChecked(False)
+        self.action_viewxml1.setChecked(False)
+        self.action_viewNotxml1.setChecked(True)
 
-    
-    
     def init_table(self):
         ma_lk = None
         self.init_xml1_table()
@@ -273,6 +251,11 @@ class MainUI():
                 n_ma_benh_khac = len(ma_benh_khac.split(";"))
             n_ma_benh = n_ma_benh_chinh + n_ma_benh_khac
             
+            tien_thuoc = dt_conn.get_chiphi_thuoc(ma_lk)
+            tien_vtyt = dt_conn.get_chiphi_vtyt(ma_lk)
+            tien_dichvu = dt_conn.get_chiphi_dichvu(ma_lk)
+
+
             for j in range(1, len(row)):
                 item = QtWidgets.QTableWidgetItem(row[j])
                 if j in center_col:
@@ -297,15 +280,38 @@ class MainUI():
                             if ngayra > ngayqt:
                                 item.setBackground(color_red)
                         case 25:
-                            xml2_tongthuoc = dt_conn.get_tongthuoc(ma_lk)
-                            tong_thuoc = float(row[25])
-                            if (xml2_tongthuoc != tong_thuoc):
+                            tongthuoc = tien_thuoc["thanh_tien"]
+                            if (tongthuoc != float(row[j])):
                                 item.setBackground(color_red)
                         case 26:
-                            xml3_tongvtyt = dt_conn.get_tongvtyt(ma_lk)
-                            tong_vtyt = float(row[26])
-                            if (xml3_tongvtyt != tong_vtyt):
+                            tongvtyt = tien_vtyt["thanh_tien"]
+                            if (tongvtyt != float(row[j])):
                                 item.setBackground(color_red)
+                        case 27:
+                            tongchi = tien_thuoc["thanh_tien"] + tien_vtyt["thanh_tien"] + tien_dichvu["thanh_tien"]
+                            if (tongchi != float(row[j])):
+                                item.setBackground(color_red)
+                        case 28:
+                            tong_bntt = tien_thuoc["bntt"] + tien_vtyt["bntt"] + tien_dichvu["bntt"]
+                            if (tong_bntt != float(row[j])):
+                                item.setBackground(color_red)
+                        
+                        case 29:
+                            tong_bncct = tien_thuoc["bncct"] + tien_vtyt["bncct"] + tien_dichvu["bncct"]
+                            if (tong_bncct != float(row[j])):
+                                print(tong_bncct, row[j])
+                                item.setBackground(color_red)
+                        case 30:
+                            tong_bhtt = tien_thuoc["bhtt"] + tien_vtyt["bhtt"] + tien_dichvu["bhtt"]
+                            if (tong_bhtt != float(row[j])):
+                                item.setBackground(color_red)
+
+                        case 36:
+                            if (row[j] == ""):
+                                item.setBackground(color_orange)
+                            elif (row[35] == "1" and row[j] != "K01"):
+                                item.setBackground(color_orange)
+                            
                         case _:
                             pass
                 self.tbXML1.setItem(i, j-1, item)
@@ -407,7 +413,36 @@ class MainUI():
         for i, row in enumerate(rows):
             self.tbXML3.setRowCount(i + 1)
             self.tbXML3.setRowHeight(i, 9)
-            ma_nhom = row[5]
+            # Khơi tạo các biến để tính toán
+            ma_nhom = int(row[5])
+            sl = float(row[11])
+            don_gia = float(row[12])
+            ty_le = int(row[14])/100
+            if (row[16] == ""):
+                tran_tt = 0.0
+            else:
+                tran_tt = float(row[16])
+            muc_huong = int(row[17])/100
+            # tính toán lại chi phí
+            if (ma_nhom == 10):
+                thanh_tien = sl*don_gia
+                if (tran_tt == 0.0): # Nếu không có trần VTYT
+                    if (ty_le != 1):
+                        t_bntt = sl*don_gia*(1-ty_le)
+                    else:
+                        t_bntt = 0.0
+                else: # Nếu có trần VTYT
+                    if (ty_le == 1):
+                        t_bntt = thanh_tien - tran_tt
+                    else:
+                        t_bntt = thanh_tien - tran_tt + tran_tt*ty_le
+            else:
+                thanh_tien = sl*don_gia*ty_le
+                t_bntt = float(0)
+
+            if (tran_tt == 0.0):
+                pass
+            
             for j in range(1, len(row)):
                 item = QtWidgets.QTableWidgetItem(row[j])
                 if j in center_col:
@@ -421,21 +456,51 @@ class MainUI():
                 else:
                     match j:
                         case 3|8:
-                            if (ma_nhom != "10" and ma_nhom == ""):
+                            if (ma_nhom != 10 and row[j] == ""):
                                 item.setBackground(color_orange)
-                        case 4|7|13:
-                            if (ma_nhom == "10" and row[j] == ""):
+                        case 4|7:
+                            if (ma_nhom == 10 and row[j] == ""):
                                 item.setBackground(color_orange)
+                        case 6:
+                            if ( row[j] == "" and row[16] != ""):
+                                item.setBackground(color_red)
                         case 10:
                             if (row[j] != "1"):
                                 item.setBackground(color_red)
+                        case 13:
+                            if (ma_nhom == 10 and row[j] == ""):
+                                item.setBackground(color_red)
+
+                        case 14:
+                            if ( row[j] == "0"):
+                                item.setBackground(color_red)
+                        case 15:
+                            pass
+                        case 16:
+                            if ( row[j] != "" and row[6] ==""):
+                                item.setBackground(color_red)
+                        
+                        case 17:
+                            if ( row[j] == "0"):
+                                item.setBackground(color_red)
+                        case 19:
+                            if ( t_bntt != float(row[j])):
+                                item.setBackground(color_red)
+                        case 20:
+                            if (row[6] != ""):
+                                k = dt_conn.get_k(row[1], row[6])
+                                print(k)
+                        case 21:
+                            if (row[6] != "" and row[14] == "50" and row[16] != ""):
+                                if (row[j] != "0.00"):
+                                    item.setBackground(color_red)
+                
+
                         case 24:
                             if(ma_nhom == "14" or ma_nhom == "15" or ma_nhom == "16"):
                                 if (row[j] == ""):
                                     item.setBackground(color_orange)
-
-                       
-                                
+    
                         case _:
                             pass
                     
@@ -471,8 +536,11 @@ class MainUI():
                     item.setTextAlignment(QtCore.Qt.AlignCenter)
                 self.tbXML5.setItem(i, j-1, item)
     
-    def costed_check(self):
+    def calc_in_GOIVT(self, ma_lk, goi):
+
         pass
+
+
 
 
 
