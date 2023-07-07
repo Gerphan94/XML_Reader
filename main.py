@@ -19,7 +19,6 @@ color_orange = QtGui.QColor("#FFD36E")
 color_red = QtGui.QColor("#FF0303")
 
 
-
 class MainUI():
     def __init__(self):
         self.xml_path = dt_conn.get_path()
@@ -274,6 +273,10 @@ class MainUI():
                             ngayra = int(row[20])
                             if (ngayvao > ngayra):
                                 item.setBackground(color_red)
+                        case 21:
+                            if (row[j] == "" or row[j] == "0"):
+                                item.setBackground(color_red)
+
                         case 24:
                             ngayra = int(row[20])
                             ngayqt = int(row[24])
@@ -346,7 +349,7 @@ class MainUI():
                 else:
                     match j:
                         case 4:
-                            if (row[j] != "4"):
+                            if (row[j] != "4") and (row[j] != "7") and (row[j] != "17"):
                                 item.setBackground(color_red)
                         case 12:
                             if (row[j] != "1"):
@@ -591,7 +594,11 @@ if __name__ == "__main__":
     app = QtWidgets.QApplication(sys.argv)
     MainWindow = QtWidgets.QMainWindow()
     main_ui = MainUI()
-    with open('style.css', 'r') as f:
+    if getattr(sys, 'frozen', False):
+        working_dir = os.path.dirname(os.path.abspath(sys.executable))
+    else:
+        working_dir = os.path.dirname(os.path.abspath(__file__))
+    with open(working_dir + '\style.css', 'r') as f:
             css = f.read()
     app.setStyleSheet(css)
     main_ui.setupUi(MainWindow)

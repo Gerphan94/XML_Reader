@@ -268,15 +268,27 @@ class dataConnection(object):
     def get_chiphi_thuoc(self, ma_lk):
         stm = f"SELECT thanh_tien, t_bntt, t_bhtt, t_bncct FROM xml2 WHERE ma_lk = '{ma_lk}' "
         rows = self.cur.execute(stm).fetchall()
-        thanh_tien = 0 
+        thanh_tien = 0
         bntt = 0
         bhtt = 0
         bncct = 0
         for row in rows:
-            thanh_tien += float(row[0])
-            bntt += float(row[1])
-            bhtt += float(row[2])
-            bncct += float(row[3])
+            try:
+                thanh_tien += float(row[0])
+            except:
+                thanh_tien += 0
+            try:
+                bntt += float(row[1])
+            except:
+                bntt += 0
+            try:
+                bhtt += float(row[2])
+            except:
+                bhtt += 0
+            try:
+                bncct += float(row[3])
+            except:
+                bncct +=0
             
         return {"thanh_tien":thanh_tien, "bntt":bntt, "bhtt":bhtt, "bncct":bncct}
 

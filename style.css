@@ -3,7 +3,7 @@ Qwidget {
 }
 
 QMenuBar {
-	background-color: #transparent;
+	background-color: transparent;
 	color: #000;
 	font-size: 11pt;
 }
