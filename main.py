@@ -296,17 +296,22 @@ class MainUI():
                                 item.setBackground(color_red)
                         case 28:
                             tong_bntt = tien_thuoc["bntt"] + tien_vtyt["bntt"] + tien_dichvu["bntt"]
+                            tong_bntt = round(tong_bntt,2)
                             if (tong_bntt != float(row[j])):
+                                print(tong_bntt, float(row[j]))
                                 item.setBackground(color_red)
                         
                         case 29:
                             tong_bncct = tien_thuoc["bncct"] + tien_vtyt["bncct"] + tien_dichvu["bncct"]
+                            tong_bncct = round(tong_bncct, 2)
                             if (tong_bncct != float(row[j])):
                                 print(tong_bncct, row[j])
                                 item.setBackground(color_red)
                         case 30:
                             tong_bhtt = tien_thuoc["bhtt"] + tien_vtyt["bhtt"] + tien_dichvu["bhtt"]
+                            tong_bhtt = round(tong_bhtt, 2)
                             if (tong_bhtt != float(row[j])):
+                                print(tong_bhtt, row[j])
                                 item.setBackground(color_red)
 
                         case 36:
